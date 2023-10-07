@@ -13,6 +13,7 @@ Docker - https://www.linux.com/topic/desktop/how-install-and-use-docker-linux/
 
 # Setting up the mariadb container
 docker pull mariadb
+docker network create doughsavernetwork
 docker run --detach --network doughsavernetwork --name doughsaverdb --env MARIADB_USER=dsuser --env MARIADB_PASSWORD='samplepassword' --env MARIADB_ROOT_PASSWORD='samplerootpassword' mariadb:latest
 
 # Load data into the mariadb container.
