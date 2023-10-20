@@ -30,6 +30,6 @@ pip freeze > requirements.txt
 python manage.py runserver
 
 # type this in browser to view web server app
-http://127.0.0.1:8000/doughsaverapp/
+http://127.0.0.1:8000/index
 
 # I added an overkill .gitignore file so you can add your virtual environment name and whatever else in the future

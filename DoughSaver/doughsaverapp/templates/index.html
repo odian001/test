@@ -1,9 +1,26 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-<body>
 
-<h1>Dough Saver!</h1>
-<p>We have a lot of work to do!</p>
+{% include 'header.html' %}
 
-</body>
-</html>
+<form action="" method="post">
+  
+    <div class="LoginContainer">
+      <label for="uname"><b>Username</b></label>
+      <input type="login" placeholder="Enter Username" name="uname" required>
+  
+      <label for="psw"><b>Password</b></label>
+      <input type="loginPassword" placeholder="Enter Password" name="psw" required>
+          
+      <button type="loginSubmit">Login</button>
+      <label>
+        <input type="checkbox" checked="checked" name="remember"> Remember me
+      </label>
+    </div>
+  
+    <div class="LoginContainer" >
+      <span class="psw">Forgot <a href="#">password?</a></span>
+    </div>
+  </form>
+
+{% include 'footer.html' %}
