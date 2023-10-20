@@ -13,3 +13,7 @@ def footer(request):
 def heading(request):
     template = loader.get_template('heading.html')
     return HttpResponse(template.render())
+
+def accountcreation(request):
+    template = loader.get_template('accountcreation.html')
+    return HttpResponse(template.render())
