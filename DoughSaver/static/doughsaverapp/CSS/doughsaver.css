@@ -70,7 +70,7 @@
   }
 
   /* Login Submit Button */
-  button[type=loginSubmit] {
+  button[type=loginSubmit], button[type=accountCreation] {
     background-color: #232724;
     color: white;
     padding: 14px 20px;
@@ -84,10 +84,16 @@
   button[type=loginSubmit]:hover {
     opacity: 0.8;
   }
-
+  
   /* Login page */
   span.psw {
     float: right;
+  }
+
+  /*HyperLink */
+  .signUp{
+    padding: 20px;
+    text-align: center;
   }
   
   footer {

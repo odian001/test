@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+
+{% include 'header.html' %}
+<body>
+<link rel="stylesheet" href="{% static 'doughsaverapp/CSS/accountcreation.css' %}">
+<form action="" style="border:1px solid #ccc" method="post">
+  <div class="SignUpContainer">
+    <h1>Create An Account</h1>
+    <div class="column">
+	    <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" required>
+    
+      <label for="firstname"><b>First Name</b></label>
+      <input type="text" placeholder="Enter First Name" name="firstname" required>
+
+      <label for="firstname"><b>First Name</b></label>
+      <input type="text" placeholder="Enter First Name" name="firstname" required>
+      <label for="email"><b>Email</b></label>
+      <input type="text" placeholder="Enter Email" name="email" required>
+
+      <label for="psw"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="psw" required>
+
+      <label for="psw-repeat"><b>Repeat Password</b></label>
+      <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
+    </div>
+    
+    <label>
+      <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
+    </label>
+      <button type="submit" class="signupbtn">Sign Up</button>
+      <button type="cancel" class="cancelbtn">Cancel</button>
+  </div>
+</form>
+</body>
+{% include 'footer.html' %}
+</html>
