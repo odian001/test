@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Price History List</title>
+</head>
+<body>
+    <h1>Price History List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Store Name</th>
+                <th>Ingredient Name</th>
+                <th>Update Timestamp</th>
+                <th>Historical Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in price_history_list %}
+                <tr>
+                    <td>{{ entry.StoreID.StoreName }}</td>
+                    <td>{{ entry.IngredientID.IngredientName }}</td>
+                    <td>{{ entry.UpdateTimestamp }}</td>
+                    <td>${{ entry.HistoricalPrice }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

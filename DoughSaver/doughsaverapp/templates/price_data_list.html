@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Current Item Prices</title>
+</head>
+<body>
+    <h1>Current Item Prices</h1>
+    <ul>
+        {% for price_data in price_data_list %}
+            <li>
+                {{ price_data.IngredientID.IngredientName }} at {{ price_data.StoreID.StoreName }}:: ${{ price_data.CurrentPrice }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
