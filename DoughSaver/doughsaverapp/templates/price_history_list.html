@@ -20,7 +20,7 @@
                     <td>{{ entry.StoreID.StoreName }}</td>
                     <td>{{ entry.IngredientID.IngredientName }}</td>
                     <td>{{ entry.UpdateTimestamp }}</td>
-                    <td>${{ entry.HistoricalPrice }}</td>
+                    <td>${{ entry.HistoricalPrice }} / {{ entry.IngredientID.Quantity }} {{ entry.IngredientID.Unit }}</td>
                 </tr>
             {% endfor %}
         </tbody>
