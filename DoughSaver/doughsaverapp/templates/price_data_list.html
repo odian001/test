@@ -8,7 +8,7 @@
     <ul>
         {% for price_data in price_data_list %}
             <li>
-                {{ price_data.IngredientID.IngredientName }} at {{ price_data.StoreID.StoreName }}:: ${{ price_data.CurrentPrice }}
+                {{ price_data.IngredientID.IngredientName }} at {{ price_data.StoreID.StoreName }}: ${{ price_data.CurrentPrice }} / {{ price_data.IngredientID.Quantity }} {{ price_data.IngredientID.Unit }}
             </li>
         {% endfor %}
     </ul>
