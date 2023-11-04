@@ -1,16 +1,26 @@
-{% load static %}
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
-{% include 'header.html' %}
+{% block content %}
 
-<form action="" method="post">
-  
+  <form action="" method="post">
+
+    <!--Cross Site Request Forgery Cookie-->
+    {% csrf_token %} 
+
     <div class="LoginContainer">
+
+      {% if messages %}
+        {% for message in messages %}
+          {{ message }}
+        {% endfor %}
+      {% endif %}
+
+      <br>
       <label for="uname"><b>Username</b></label>
-      <input type="login" placeholder="Enter Username" name="uname" required>
+      <input type="text" placeholder="Enter Username" name="uname" required>
   
       <label for="psw"><b>Password</b></label>
-      <input type="loginPassword" placeholder="Enter Password" name="psw" required>
+      <input type="Password" placeholder="Enter Password" name="psw" required>
           
       <button type="loginSubmit">Login</button>
       <label>
@@ -25,13 +35,8 @@
    <!-- HyperLink Place Holder to switch html--> 
      <div class="signUp">
       <a href="/accountcreation">Don't Have an Account?</a>
-  </div>
+    </div>
     
-   <!-- Button For Switching To Sign Up html potentially 
-    <a href="accountcreation.html">
-      <button type="accountCreation">Don't Have An Account?</button>
-    </a>
-    </div>-->
   </form>
 
-{% include 'footer.html' %}
+{% endblock %}

@@ -1,21 +1,34 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.views.generic import ListView
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.utils.safestring import mark_safe 
+from django.contrib import messages
 from doughsaverapp.models import *
 
 
 def index(request):
-    template = loader.get_template('index.html')
-    return HttpResponse(template.render())
-
-def footer(request):
-    template = loader.get_template('footer.html')
-    return HttpResponse(template.render())
-
-def heading(request):
-    template = loader.get_template('heading.html')
-    return HttpResponse(template.render())
+    if request.method == "POST":
+        username = request.POST["uname"]
+        password = request.POST["psw"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            # Redirect to a success page.
+            messages.success(request, mark_safe("Welcome, you have successfully logged in!<br>"))
+            return redirect('index') #uses name ='index' from urls.py
+        else:
+            # Return an 'invalid login' error message.
+            messages.success(request, mark_safe("Incorrect username or password, please try again.<br>"))
+            return redirect('index')
+    else:
+        return render(request, 'index.html', {})
+    
+def logout_user(request):
+    logout(request)
+    messages.success(request, mark_safe("You were successfully logged out.<br>"))
+    return redirect('index')
 
 def accountcreation(request):
     template = loader.get_template('accountcreation.html')

@@ -53,48 +53,6 @@
     background-color: #4D4E4D;
     color: #6AA978;
   }
-
-  /* Login page container */
-  .LoginContainer {
-    padding: 16px;
-  }
-
-  /* Login page Inputs */
-  input[type=login], input[type=loginPassword] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-
-  /* Login Submit Button */
-  button[type=loginSubmit], button[type=accountCreation] {
-    background-color: #232724;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  /* Login Submit Button */
-  button[type=loginSubmit]:hover {
-    opacity: 0.8;
-  }
-  
-  /* Login page */
-  span.psw {
-    float: right;
-  }
-
-  /*HyperLink */
-  .signUp{
-    padding: 20px;
-    text-align: center;
-  }
   
   footer {
     padding: 20px;

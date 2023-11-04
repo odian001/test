@@ -1,0 +1,63 @@
+{% load static %}
+
+<!--HEADER CONTENT-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Dough Saver</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{% static 'doughsaverapp/CSS/account.css' %}">
+<link rel="stylesheet" href="{% static 'doughsaverapp/CSS/doughsaver.css' %}">
+<!--<link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./images/favicon-16x16.png">
+<link rel="manifest" href="./images/site.webmanifest">-->
+</head>
+
+<!-- BANNER CONTENT -->
+<div id="background">
+<img class="img-banner" src="{% static 'doughsaverapp/images/DoughSaver2.svg' %}" alt="logo banner">
+</div>
+
+<!--NAVBAR CONTENT-->
+<body>
+<div class="navbar">
+  <a href="">Link</a>
+  <a href="">Link</a>
+
+  <div class="dropdown" >
+    <button class="dropbtn" onclick="dropdown('example')">Link</button>
+    <div class="dropdown-content" id="example">
+      <a href="#">example</a>
+      <a href="">Link</a>
+    </div>
+  </div>
+
+  {% if user.is_authenticated %}
+    <a href="{% url 'logout' %}">Logout</a>
+  {% else %}
+    <a href="{% url 'index' %}">Login</a>
+  {% endif %}
+
+</div>
+
+
+{% block content %}
+
+<!--All Webpages that extend this base html file and use the block tags will display content here-->
+
+{% endblock %}
+
+
+<!--FOOTER CONTENT-->
+<footer class="bg-black small text-center text-white-50">
+    <!--<a href=""></a><br>
+    <a href=""></a><br>-->
+<p>&copy; DoughSaver - Compare Prices - Save Money</p>
+</footer>
+
+<script src="{% static 'doughsaverapp/js/dropdown.js' %}"></script>
+
+</body>
+</html>

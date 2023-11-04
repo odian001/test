@@ -1,0 +1,72 @@
+  * {
+    box-sizing: border-box;
+  }
+
+  /* ACCOUNT CREATION PAGE CSS */
+
+  /* Account Info container */
+  .SignUpContainer {
+    padding: 16px;
+  }
+
+  /* Sign Up/ Cancel Button */
+  button[type=cancel], button[type=submit] {
+    background-color: #232724;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  /* Sign Up Submit Button */
+  button[type=cancel]:hover, button[type=submit]:hover {
+    opacity: 0.8;
+  }
+
+
+  /* LOGIN PAGE CSS */
+
+  /* Login page container */
+  .LoginContainer {
+    padding: 16px;
+  }
+
+  /* Login Submit Button */
+  button[type=loginSubmit] {
+    background-color: #232724;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  /* Login Submit Button */
+  button[type=loginSubmit]:hover {
+    opacity: 0.8;
+  }
+  
+  /* Login page */
+  span.psw {
+    float: right;
+  }
+
+  /*HyperLink */
+  .signUp{
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* SHARED LOGIN/ACCOUNT CREATION PAGE CSS */
+
+  /* Login page Inputs/Account Info Inputs */
+  input[type=text], input[type=Password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }

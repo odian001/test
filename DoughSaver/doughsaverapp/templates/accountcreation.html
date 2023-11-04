@@ -1,10 +1,12 @@
-{% load static %}
-<!DOCTYPE html>
+{% extends 'base.html' %}
 
-{% include 'header.html' %}
-<body>
-<link rel="stylesheet" href="{% static 'doughsaverapp/CSS/accountcreation.css' %}">
+{% block content %}
+
 <form action="" style="border:1px solid #ccc" method="post">
+  
+  <!--Cross Site Request Forgery Cookie-->
+  {% csrf_token %}
+
   <div class="SignUpContainer">
     <h1>Create An Account</h1>
     <div class="column">
@@ -34,6 +36,6 @@
       <button type="cancel" class="cancelbtn">Cancel</button>
   </div>
 </form>
-</body>
-{% include 'footer.html' %}
-</html>
+
+{% endblock %}
+
