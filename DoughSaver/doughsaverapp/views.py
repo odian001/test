@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 from django.contrib import messages
 from doughsaverapp.models import *
 
-
 def index(request):
     if request.method == "POST":
         username = request.POST["uname"]
@@ -34,7 +33,6 @@ def accountcreation(request):
     template = loader.get_template('accountcreation.html')
     return HttpResponse(template.render())
 
-
 class PriceDataListView(ListView):
     model = PriceData
     template_name = 'price_data_list.html'
@@ -55,3 +53,16 @@ def price_history_list(request):
     price_history_list = PriceHistory.objects.all()
     context = {'price_history_list': price_history_list}
     return render(request, 'price_history_list.html', context)
+
+def item_search(request):
+    search_query = request.GET.get('search_query', '')
+    items = []
+
+    if search_query:
+            items = PriceData.objects.filter(IngredientID__IngredientName__icontains=search_query).values(
+            'IngredientID__IngredientName',
+            'CurrentPrice',
+            'StoreID__StoreName'
+            )
+
+    return render(request, 'search.html', {'search_query': search_query, 'items': items})
