@@ -27,12 +27,22 @@
   <a href="">Link</a>
 
   <div class="dropdown" >
-    <button class="dropbtn" onclick="dropdown('example')">Search</button>
-    <div class="dropdown-content" id="example">
-     <a href={% url 'item_search'%}>Item Search</a>
-      <a href="">Recipe Search</a>
+    <button class="dropbtn" onclick="dropdown('search')">Search</button>
+    <div class="dropdown-content" id="search">
+     <a href="#">Search</a>
+     <a href="{% url 'item_search'%}">Item Search</a>
+     <a href="">Recipe Search</a>
     </div>
   </div>
+
+  <div class="dropdown" >
+    <button class="dropbtn" onclick="dropdown('shop manager')">Shop Manager</button>
+    <div class="dropdown-content" id="shop manager">
+      <a href="#">Shop Manager</a>
+      <a href="{% url 'store_selection' %}">Select Stores</a>
+    </div>
+  </div>
+
 
   {% if user.is_authenticated %}
     <a href="{% url 'logout' %}">Logout</a>

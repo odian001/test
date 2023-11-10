@@ -34,7 +34,7 @@ def accountcreation(request):
     template = loader.get_template('accountcreation.html')
     return HttpResponse(template.render())
 
-#def store_selection(request):
+def store_selection(request):
     if request.method == 'POST':
         form = StoreSelectionForm(request.POST)
         if form.is_valid():
@@ -48,8 +48,8 @@ def accountcreation(request):
         form = StoreSelectionForm()
     
     return render(request, 'store_selection.html', {'form': form}) 
-    
-#def view_selected_stores(request):
+
+def view_selected_stores(request):
     user_selection = UserStoreSelection.objects.get(user=request.user)
     selected_stores = user_selection.stores.all()
     return render(request, 'store_selection.html', {'selected_stores': selected_stores})
