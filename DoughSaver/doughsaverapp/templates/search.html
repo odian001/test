@@ -15,6 +15,7 @@
                     <th>Regular Price</th>
                     <th>Store Name</th>
                     <th>Add to List</th>
+                    <th>Track Item?</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,8 +29,15 @@
                             <form method="post" action="">
                                 {% csrf_token %} <!-- Needs Implementation for Shopping List-->
                                 <input type="hidden" name="ingredient_id">
-                                <button type="submit">Add</button>
+                                <button type="submit">Add to Shopping List</button>
                             </form>
+                        </td>
+                        <td>
+                        <form method="post" action="">
+                            {% csrf_token %} <!-- Needs Implementation for Shopping List-->
+                            <input type="hidden" name="ingredient_id">
+                            <button type="submit">Track Item</button>
+                        </form>
                         </td>
                     </tr>
                 {% endfor %}
