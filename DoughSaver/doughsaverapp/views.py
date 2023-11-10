@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.utils.safestring import mark_safe 
 from django.contrib import messages
+from .forms import StoreSelectionForm
 from doughsaverapp.models import *
 
 def index(request):
@@ -32,6 +33,26 @@ def logout_user(request):
 def accountcreation(request):
     template = loader.get_template('accountcreation.html')
     return HttpResponse(template.render())
+
+#def store_selection(request):
+    if request.method == 'POST':
+        form = StoreSelectionForm(request.POST)
+        if form.is_valid():
+            selection = form.save(commit=False)
+            selection.user = request.user
+            selection.save()
+            form.save_m2m()
+            # Redirect or do something after saving
+            return redirect('view_selected_stores')
+    else:
+        form = StoreSelectionForm()
+    
+    return render(request, 'store_selection.html', {'form': form}) 
+    
+#def view_selected_stores(request):
+    user_selection = UserStoreSelection.objects.get(user=request.user)
+    selected_stores = user_selection.stores.all()
+    return render(request, 'store_selection.html', {'selected_stores': selected_stores})
 
 class PriceDataListView(ListView):
     model = PriceData
