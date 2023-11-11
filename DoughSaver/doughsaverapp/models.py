@@ -20,6 +20,8 @@ class GroceryStore(models.Model):
     StoreId = models.IntegerField(primary_key=True, db_column='StoreId')
     StoreName = models.CharField(max_length=25, db_column='StoreName')
     Address = models.CharField(max_length=75, db_column='Address')
+    def __str__(self):
+        return self.StoreName + " - " + self.Address
 
 class UserStoreSelection(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
