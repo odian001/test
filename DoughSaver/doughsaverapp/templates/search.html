@@ -22,7 +22,9 @@
                 <!-- Search the Items Container to Show What is Found -->
                 {% for item in items %}
                     <tr>
-                        <td>{{ item.IngredientID__IngredientName }}</td>
+                        <td>
+								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientID__IngredientName }}</a>
+						</td>
                         <td>{{ item.CurrentPrice }}</td>
                         <td>{{ item.StoreID__StoreName }}</td>
                         <td>

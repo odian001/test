@@ -1,12 +1,13 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.views.generic import ListView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.utils.safestring import mark_safe 
 from django.contrib import messages
 from .forms import StoreSelectionForm
 from doughsaverapp.models import *
+from django.urls import reverse
 
 def index(request):
     if request.method == "POST":
@@ -81,9 +82,14 @@ def item_search(request):
 
     if search_query:
             items = PriceData.objects.filter(IngredientID__IngredientName__icontains=search_query).values(
+            'IngredientID',
             'IngredientID__IngredientName',
             'CurrentPrice',
             'StoreID__StoreName'
             )
 
     return render(request, 'search.html', {'search_query': search_query, 'items': items})
+    
+def ingredient_detail(request, IngredientID):
+    ingredient = get_object_or_404(Ingredient, pk=IngredientID)
+    return render(request, 'ingredient_detail.html', {'ingredient': ingredient})
