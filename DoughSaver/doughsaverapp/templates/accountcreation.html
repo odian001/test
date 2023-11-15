@@ -2,12 +2,20 @@
 
 {% block content %}
 
+{% if form.errors %}
+
+<p>Error, please resubmit the registration form</p>
+
+{% endif %}
+
 <form action="" style="border:1px solid #ccc" method="post">
   
   <!--Cross Site Request Forgery Cookie-->
   {% csrf_token %}
 
-  <div class="SignUpContainer">
+  {{ form.as_p }}
+
+  <!--<div class="SignUpContainer">
     <h1>Create An Account</h1>
     <div class="column">
 	    <label for="username"><b>Username</b></label>
@@ -34,7 +42,8 @@
     </label>
       <button type="submit" class="signupbtn">Sign Up</button>
       <button type="cancel" class="cancelbtn">Cancel</button>
-  </div>
+  </div>-->
+  <button type="submit" class="signupbtn">Sign Up</button>
 </form>
 
 {% endblock %}

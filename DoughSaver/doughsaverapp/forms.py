@@ -1,10 +1,10 @@
 from django import forms
-from .models import GroceryStore, UserStoreSelection
+from .models import Storecollection
 
 class StoreSelectionForm(forms.ModelForm):
     class Meta:
-        model = UserStoreSelection
-        fields = ['stores']
+        model = Storecollection
+        fields = ['storeid']
         widgets = {
-            'stores': forms.CheckboxSelectMultiple
+            'storeid': forms.CheckboxSelectMultiple
         }

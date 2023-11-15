@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['cs411-black.student.cs.odu.edu', '127.0.0.1']
 
+LOGOUT_REDIRECT_URL = '/index'
 
 # Application definition
 

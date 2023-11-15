@@ -3,9 +3,10 @@ from django.template import loader
 from django.views.generic import ListView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm
+from .forms import StoreSelectionForm
 from django.utils.safestring import mark_safe 
 from django.contrib import messages
-from .forms import StoreSelectionForm
 from doughsaverapp.models import *
 from django.urls import reverse
 
@@ -32,28 +33,39 @@ def logout_user(request):
     return redirect('index')
 
 def accountcreation(request):
-    template = loader.get_template('accountcreation.html')
-    return HttpResponse(template.render())
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            messages.success(request, mark_safe("You were successfully registered.<br>"))
+            return redirect('index')
+    else:
+        form = UserCreationForm()
+    return render(request, 'accountcreation.html', {'form': form})
 
 def store_selection(request):
     if request.method == 'POST':
         form = StoreSelectionForm(request.POST)
         if form.is_valid():
-            selection = form.save(commit=False)
+            selection = form.save()
             selection.user = request.user
             selection.save()
             form.save_m2m()
             # Redirect or do something after saving
-            return redirect('view_selected_stores')
+            return redirect('store_selection')
     else:
         form = StoreSelectionForm()
     
-    return render(request, 'store_selection.html', {'form': form}) 
+    return render(request, 'store_selection.html', {'form': form})
 
-def view_selected_stores(request):
-    user_selection = UserStoreSelection.objects.get(user=request.user)
-    selected_stores = user_selection.stores.all()
-    return render(request, 'store_selection.html', {'selected_stores': selected_stores})
+#def view_selected_stores(request):
+    #user_selection = UserStoreSelection.objects.get(user=request.user)
+    #selected_stores = user_selection.stores.all()
+    #return render(request, 'store_selection.html', {'selected_stores': selected_stores})
 
 class PriceDataListView(ListView):
     model = PriceData
