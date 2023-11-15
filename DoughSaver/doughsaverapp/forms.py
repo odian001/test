@@ -5,6 +5,4 @@ class StoreSelectionForm(forms.ModelForm):
     class Meta:
         model = Storecollection
         fields = ['storeid']
-        widgets = {
-            'storeid': forms.CheckboxSelectMultiple
-        }
+        #widgets = {'storeid': forms.CheckboxSelectMultiple}

@@ -24,13 +24,16 @@ class GroceryStore(models.Model):
         return self.StoreName + " - " + self.Address
 
 class Storecollection(models.Model):
-    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, StoreID) found, that is not supported. The first column is selected.
-    storeid = models.OneToOneField(GroceryStore, models.DO_NOTHING, db_column='StoreID')  # Field name made lowercase.
+    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
+    storeid = models.ManyToManyField(GroceryStore, db_column='StoreID')
 
     class Meta:
         managed = False
         db_table = 'StoreCollection'
-        unique_together = (('userid', 'storeid'),)
+        #unique_together = (('userid', 'storeid'),)
+
+    def __str__(self):
+        return f'{self.userid} - Store Collection'
    
 class PriceData(models.Model):
     class Meta:

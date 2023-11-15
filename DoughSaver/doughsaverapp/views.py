@@ -52,15 +52,17 @@ def store_selection(request):
         form = StoreSelectionForm(request.POST)
         if form.is_valid():
             selection = form.save()
-            selection.user = request.user
+            selection.userid = request.user
             selection.save()
-            form.save_m2m()
+            form.save_m2m() # Save the ManyToMany relationships
             # Redirect or do something after saving
             return redirect('store_selection')
     else:
         form = StoreSelectionForm()
     
-    return render(request, 'store_selection.html', {'form': form})
+    stores = GroceryStore.objects.all()
+
+    return render(request, 'store_selection.html', {'form': form, 'stores': stores})
 
 #def view_selected_stores(request):
     #user_selection = UserStoreSelection.objects.get(user=request.user)
