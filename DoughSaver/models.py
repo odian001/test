@@ -48,7 +48,7 @@ class Ingredient(models.Model):
 
 
 class Ingredientcollection(models.Model):
-    userid = models.OneToOneField(Customer, models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, IngredientID) found, that is not supported. The first column is selected.
+    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, IngredientID) found, that is not supported. The first column is selected.
     ingredientid = models.OneToOneField(Ingredient, models.DO_NOTHING, db_column='IngredientID')  # Field name made lowercase.
 
     class Meta:
@@ -87,7 +87,7 @@ class Pricehistory(models.Model):
 
 
 class Recipe(models.Model):
-    recipeid = models.AutoField(db_column='RecipeID', primary_key=True)  # Field name made lowercase.
+    recipeid = models.IntegerField(db_column='RecipeID', primary_key=True)  # Field name made lowercase. The composite primary key (RecipeID, IngredientID) found, that is not supported. The first column is selected.
     recipename = models.CharField(db_column='RecipeName', max_length=50)  # Field name made lowercase.
     isprivate = models.IntegerField(db_column='IsPrivate')  # Field name made lowercase.
     privateuid = models.IntegerField(db_column='PrivateUID', blank=True, null=True)  # Field name made lowercase.
@@ -98,10 +98,11 @@ class Recipe(models.Model):
     class Meta:
         managed = False
         db_table = 'Recipe'
+        unique_together = (('recipeid', 'ingredientid'),)
 
 
 class Recipecollection(models.Model):
-    userid = models.OneToOneField(Customer, models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, RecipeID) found, that is not supported. The first column is selected.
+    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, RecipeID) found, that is not supported. The first column is selected.
     recipeid = models.ForeignKey(Recipe, models.DO_NOTHING, db_column='RecipeID')  # Field name made lowercase.
 
     class Meta:
@@ -111,7 +112,7 @@ class Recipecollection(models.Model):
 
 
 class Shoppinglist(models.Model):
-    listid = models.AutoField(db_column='ListID', primary_key=True)  # Field name made lowercase.
+    listid = models.IntegerField(db_column='ListID', primary_key=True)  # Field name made lowercase. The composite primary key (ListID, IngredientID, StoreID) found, that is not supported. The first column is selected.
     listname = models.CharField(db_column='ListName', max_length=25)  # Field name made lowercase.
     ingredientid = models.ForeignKey(Ingredient, models.DO_NOTHING, db_column='IngredientID')  # Field name made lowercase.
     storeid = models.ForeignKey(Grocerystore, models.DO_NOTHING, db_column='StoreID')  # Field name made lowercase.
@@ -121,10 +122,11 @@ class Shoppinglist(models.Model):
     class Meta:
         managed = False
         db_table = 'ShoppingList'
+        unique_together = (('listid', 'ingredientid', 'storeid'),)
 
 
 class Shoppinglistcollection(models.Model):
-    userid = models.OneToOneField(Customer, models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, ListID) found, that is not supported. The first column is selected.
+    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, ListID) found, that is not supported. The first column is selected.
     listid = models.ForeignKey(Shoppinglist, models.DO_NOTHING, db_column='ListID')  # Field name made lowercase.
 
     class Meta:
@@ -134,7 +136,7 @@ class Shoppinglistcollection(models.Model):
 
 
 class Storecollection(models.Model):
-    userid = models.OneToOneField(Customer, models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, StoreID) found, that is not supported. The first column is selected.
+    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)  # Field name made lowercase. The composite primary key (UserID, StoreID) found, that is not supported. The first column is selected.
     storeid = models.OneToOneField(Grocerystore, models.DO_NOTHING, db_column='StoreID')  # Field name made lowercase.
 
     class Meta:
