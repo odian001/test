@@ -60,6 +60,20 @@ class PriceHistory(models.Model):
     UpdateTimestamp = models.DateTimeField()
     HistoricalPrice = models.DecimalField(max_digits=6, decimal_places=2)
 
+class Recipe(models.Model):
+    class Meta:
+        db_table = 'Recipe'
+        managed = False
+    RecipeID = models.AutoField(primary_key=True, unique=True, db_column='RecipeID')
+    RecipeName = models.CharField(max_length=150, db_column='RecipeName')
+    IsPrivate = models.BooleanField(db_column='IsPrivate')
+    PrivateUID = models.IntegerField(db_column='PrivateUID', null=True)
+    IngredientID = models.ManyToManyField('Ingredient', db_column='IngredientID')
+    Quantity = models.DecimalField(max_digits=10, decimal_places=0, db_column='Quantity')
+    Unit = models.CharField(max_length=25, db_column='Unit')
+
+#class Shopping
+
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
 

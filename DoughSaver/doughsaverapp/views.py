@@ -9,6 +9,7 @@ from django.utils.safestring import mark_safe
 from django.contrib import messages
 from doughsaverapp.models import *
 from django.urls import reverse
+from django.db import connection
 
 def index(request):
     if request.method == "POST":
@@ -90,7 +91,7 @@ def price_history_list(request):
     context = {'price_history_list': price_history_list}
     return render(request, 'price_history_list.html', context)
 
-def item_search(request):
+def ingredient_search(request):
     search_query = request.GET.get('search_query', '')
     items = []
 
@@ -102,8 +103,43 @@ def item_search(request):
             'StoreID__StoreName'
             )
 
-    return render(request, 'search.html', {'search_query': search_query, 'items': items})
+    return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items})
     
 def ingredient_detail(request, IngredientID):
     ingredient = get_object_or_404(Ingredient, pk=IngredientID)
     return render(request, 'ingredient_detail.html', {'ingredient': ingredient})
+
+def recipe_search(request):
+    search_query = request.GET.get('search_query', '')
+    recipes = []
+
+    if search_query:
+            recipes = Recipe.objects.filter(RecipeName__icontains=search_query).values(
+                    'RecipeID',
+                    'RecipeName'
+            )
+    distinct_recipes = {}
+
+    for recipe in recipes:
+        recipe_id = recipe['RecipeID']
+        if recipe_id not in distinct_recipes:
+            distinct_recipes[recipe_id] = recipe
+
+        # Use only the distinct recipes
+        recipes = list(distinct_recipes.values())
+
+    return render(request, 'recipe_search.html', {'search_query': search_query, 'recipes': recipes})
+
+'''def recipe_detail(request, RecipeID):
+        recipe_ID = RecipeID
+        recipes = []
+        recipes = Recipe.objects.filter(RecipeID__icontains=recipe_ID)
+        
+        ingredient_ids = []
+        for recipe in recipes:
+            ingredient_ids = recipe.IngredientID.values_list('IngredientName', flat=True)
+        
+        # Fetch the ingredients associated with the recipe
+        ingredients = Ingredient.objects.filter(IngredientID__in=Recipe.objects.filter(RecipeID=RecipeID).values_list('IngredientID', flat=True))
+        
+        return render(request, 'recipe_detail.html', {'recipe': recipe, 'ingredients': ingredients})'''

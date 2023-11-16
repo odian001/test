@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <center>
+        <form method="GET" action="{% url 'item_search' %}">
+            <input type="text" name="search_query" value="{{ search_query }}" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+    
+    {% if items %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Ingredient Name</th>
+                    <th>Regular Price</th>
+                    <th>Store Name</th>
+                    <th>Add to List</th>
+                    <th>Track Item?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Search the Items Container to Show What is Found -->
+                {% for item in items %}
+                    <tr>
+                        <td>
+								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientID__IngredientName }}</a>
+						</td>
+                        <td>{{ item.CurrentPrice }}</td>
+                        <td>{{ item.StoreID__StoreName }}</td>
+                        <td>
+                            <form method="post" action="">
+                                {% csrf_token %} <!-- Needs Implementation for Shopping List-->
+                                <input type="hidden" name="ingredient_id">
+                                <button type="submit">Add to Shopping List</button>
+                            </form>
+                        </td>
+                        <td>
+                        <form method="post" action="">
+                            {% csrf_token %} <!-- Needs Implementation for Shopping List-->
+                            <input type="hidden" name="ingredient_id">
+                            <button type="submit">Track Item</button>
+                        </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        {% if not search_query %}
+            <p></p>
+        {% else %}
+            <!-- Display a message if no search results are available -->
+            <p>Ingredient Not Found! Try Again!</p>
+        {% endif %}
+    {% endif %}
+    </center>
+{% endblock %}s

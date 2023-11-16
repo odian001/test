@@ -2,42 +2,39 @@
 
 {% block content %}
     <center>
-        <form method="GET" action="{% url 'item_search' %}">
-            <input type="text" name="search_query" value="{{ search_query }}" placeholder="Search">
+        <form method="GET" action="{% url 'recipe_search' %}">
+            <input type="text" name="search_query" value="{{ search_query }}" placeholder="Search...">
             <button type="submit">Search</button>
         </form>
     
-    {% if items %}
+    {% if recipes %}
         <table border="1">
             <thead>
                 <tr>
-                    <th>Ingredient Name</th>
-                    <th>Regular Price</th>
-                    <th>Store Name</th>
+                    <th>Recipe Name</th>
                     <th>Add to List</th>
-                    <th>Track Item?</th>
+                    <th>Track Recipe?</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Search the Items Container to Show What is Found -->
-                {% for item in items %}
+                <!-- Search the Recipes Container to Show What is Found -->
+                {% for recipe in recipes %}
                     <tr>
                         <td>
-								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientID__IngredientName }}</a>
+							<!-- Need to figure out how to get each ingredient <a href="{% url 'recipe_detail' RecipeID=recipe.RecipeID %}">{{ recipe.RecipeName }}</a> -->
+                            {{ recipe.RecipeName }}
 						</td>
-                        <td>{{ item.CurrentPrice }}</td>
-                        <td>{{ item.StoreID__StoreName }}</td>
                         <td>
                             <form method="post" action="">
                                 {% csrf_token %} <!-- Needs Implementation for Shopping List-->
-                                <input type="hidden" name="ingredient_id">
+                                <input type="hidden" name="recipe_id">
                                 <button type="submit">Add to Shopping List</button>
                             </form>
                         </td>
                         <td>
                         <form method="post" action="">
                             {% csrf_token %} <!-- Needs Implementation for Shopping List-->
-                            <input type="hidden" name="ingredient_id">
+                            <input type="hidden" name="recipe_id">
                             <button type="submit">Track Item</button>
                         </form>
                         </td>
@@ -50,8 +47,8 @@
             <p></p>
         {% else %}
             <!-- Display a message if no search results are available -->
-            <p>Item Not Found! Try Again!</p>
+            <p>No Recipes Found! Try Again!</p>
         {% endif %}
     {% endif %}
     </center>
-{% endblock %}s
+{% endblock %}
