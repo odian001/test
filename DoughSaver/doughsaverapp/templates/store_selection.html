@@ -5,26 +5,19 @@
 
 <h2>SELECT PREFERRED STORE(S)</h2>
 
-<form method="post" action="">
-
+<form method="post" action="{% url 'store_selection' %}">
     {% csrf_token %}
-
-    <!-- Display checkboxes for each store -->
-    {% for store in stores %}
-        <label>
-            <input type="checkbox" name="storeid" value="{{ store.id }}">
-            {{ store }}
-        </label><br>
-    {% endfor %}
-
-     <!--{% for field in form %}
-    <div class="fieldWrapper">
-        {{ field }}
-    </div>
-    {% endfor %}-->
-
-    <button type="submit">Save Stores</button>
-
+    <ul>
+        {% for store in grocery_stores %}
+            <li>
+                <input type="checkbox" id="store_{{ store.StoreId }}" name="store_ids" value="{{ store.StoreId }}">
+                <label for="store_{{ store.StoreId }}">
+                    {{ store }}
+                </label>
+            </li>
+        {% endfor %}
+    </ul>
+    <input type="submit" value="Save Stores">
 </form>
 
 {% endblock %}

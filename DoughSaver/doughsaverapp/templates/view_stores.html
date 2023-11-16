@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Your Store Collection</h1>
+<ul>
+    {% for user_store in user_stores %}
+        <li>{{ user_store }}</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

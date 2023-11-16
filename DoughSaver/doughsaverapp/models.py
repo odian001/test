@@ -13,27 +13,28 @@ class Ingredient(models.Model):
     IsPrivate = models.BooleanField(db_column='IsPrivate')
     PrivateUID = models.IntegerField(blank=True, null=True, db_column='PrivateUID')
 
+
 class GroceryStore(models.Model):
     class Meta:
         managed = False
         db_table = 'GroceryStore'
-    StoreId = models.IntegerField(primary_key=True, db_column='StoreId')
+    StoreId = models.AutoField(primary_key=True, db_column='StoreId')
     StoreName = models.CharField(max_length=25, db_column='StoreName')
     Address = models.CharField(max_length=75, db_column='Address')
     def __str__(self):
         return self.StoreName + " - " + self.Address
 
-class Storecollection(models.Model):
-    userid = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
-    storeid = models.ManyToManyField(GroceryStore, db_column='StoreID')
+class StoreCollection(models.Model):
+    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
+    StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
 
     class Meta:
         managed = False
         db_table = 'StoreCollection'
-        #unique_together = (('userid', 'storeid'),)
+        unique_together = (('UserID', 'StoreID'),)
 
     def __str__(self):
-        return f'{self.userid} - Store Collection'
+        return f'{self.UserID} - Store Collection'
    
 class PriceData(models.Model):
     class Meta:

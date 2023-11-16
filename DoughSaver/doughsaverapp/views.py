@@ -4,7 +4,7 @@ from django.views.generic import ListView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .forms import StoreSelectionForm
+#from .forms import StoreSelectionForm
 from django.utils.safestring import mark_safe 
 from django.contrib import messages
 from doughsaverapp.models import *
@@ -50,25 +50,22 @@ def accountcreation(request):
 
 def store_selection(request):
     if request.method == 'POST':
-        form = StoreSelectionForm(request.POST)
-        if form.is_valid():
-            selection = form.save()
-            selection.userid = request.user
-            selection.save()
-            form.save_m2m() # Save the ManyToMany relationships
-            # Redirect or do something after saving
-            return redirect('store_selection')
-    else:
-        form = StoreSelectionForm()
+        selected_store_ids = request.POST.getlist('store_ids')
+        user_id = request.user.id
+        StoreCollection.objects.filter(UserID=user_id).delete()
+        for store_id in selected_store_ids:
+            StoreCollection.objects.create(UserID_id=user_id, StoreID_id=store_id)
     
-    stores = GroceryStore.objects.all()
+        return redirect('view_selected_stores')
 
-    return render(request, 'store_selection.html', {'form': form, 'stores': stores})
+    grocery_stores = GroceryStore.objects.all()
 
-#def view_selected_stores(request):
-    #user_selection = UserStoreSelection.objects.get(user=request.user)
-    #selected_stores = user_selection.stores.all()
-    #return render(request, 'store_selection.html', {'selected_stores': selected_stores})
+    return render(request, 'store_selection.html', {'grocery_stores': grocery_stores})
+
+def view_selected_stores(request):
+    user_id = request.user.id
+    user_stores = StoreCollection.objects.filter(UserID=user_id).values('StoreID__StoreName', 'StoreID__Address')
+    return render(request, 'view_stores.html', {'user_stores': user_stores})
 
 class PriceDataListView(ListView):
     model = PriceData
