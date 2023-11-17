@@ -25,7 +25,7 @@ class GroceryStore(models.Model):
         return self.StoreName + " - " + self.Address
 
 class StoreCollection(models.Model):
-    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
+    UserID = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
     StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
 
     class Meta:
