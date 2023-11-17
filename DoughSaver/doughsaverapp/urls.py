@@ -14,6 +14,7 @@ urlpatterns = [
     path('ingredient_search/', views.ingredient_search, name='item_search'),
     path('store_selection/', views.store_selection, name='store_selection'),
     path('view_stores/', views.view_selected_stores, name='view_selected_stores'),
+    path('price_comparison/', views.price_comparison_options, name='price_comparison_options'),
     path('ingredient/<int:IngredientID>/', ingredient_detail, name='ingredient_detail'),
     path('recipe_search/', views.recipe_search, name='recipe_search'),
    # path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail')

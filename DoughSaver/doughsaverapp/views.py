@@ -56,11 +56,29 @@ def store_selection(request):
         for store_id in selected_store_ids:
             StoreCollection.objects.create(UserID_id=user_id, StoreID_id=store_id)
     
-        return redirect('view_selected_stores')
+        return redirect('price_comparison_options')
 
     grocery_stores = GroceryStore.objects.all()
 
     return render(request, 'store_selection.html', {'grocery_stores': grocery_stores})
+
+def price_comparison_options(request):
+    if request.method == 'POST':
+        #save the checkbox values in a list
+        selected_price_options = request.POST.getlist('pricing_options')
+        #If more than one price option is selected, error (Please choose one option)
+        if len(selected_price_options) > 1:
+            messages.error(request, mark_safe("Please choose only one price comparison option.<br><br>"))
+            return redirect('price_comparison_options')
+        else:
+            #check which pricing option it is
+            #call another function to get/pass stores and shopping list to correct pricing algorithm 
+            #redirect to cost breakdown?
+            return redirect('price_comparison_options')
+        
+    user_id = request.user.id
+    user_stores = StoreCollection.objects.filter(UserID=user_id).values('StoreID')
+    return render(request, 'price_comparison.html', {'user_stores': user_stores})
 
 def view_selected_stores(request):
     user_id = request.user.id
