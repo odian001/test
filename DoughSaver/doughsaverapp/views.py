@@ -55,12 +55,16 @@ def plot_price_history(ingredient_name, price_history, plot_save_path):
         store_data[store_id]['timestamps'].append(timestamp)
         store_data[store_id]['prices'].append(price)
 
+    # Retrieve store names from the database
+    store_names = {store.StoreId: store.StoreName for store in GroceryStore.objects.all()}
+
     # Create the plot
     fig, ax = plt.subplots(figsize=(14, 5.5))
 
-
     for store_id, data in store_data.items():
-        ax.plot(data['timestamps'], data['prices'], label=data['label'])
+        # Use store names in the legend
+        store_name = store_names.get(store_id, f'Store {store_id}')
+        ax.plot(data['timestamps'], data['prices'], label=store_name)
 
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(DateFormatter('%m-%Y'))
@@ -73,10 +77,12 @@ def plot_price_history(ingredient_name, price_history, plot_save_path):
     # Add a grid
     ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
 
-
     # Save the plot as an image
     plt.savefig(plot_save_path)
     plt.close()  # Close the plot to free up resources
+
+    
+
 
 def ingredient_price_history(request, ingredient_id):
     # Get the ingredient name from the Ingredient table
