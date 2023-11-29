@@ -17,5 +17,8 @@ urlpatterns = [
     path('price_comparison/', views.price_comparison_options, name='price_comparison_options'),
     path('ingredient/<int:IngredientID>/', ingredient_detail, name='ingredient_detail'),
     path('recipe_search/', views.recipe_search, name='recipe_search'),
+    #path('matplotlib-example/', matplotlib_example, name='matplotlib_example'),
    # path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail')
 ]
+
+

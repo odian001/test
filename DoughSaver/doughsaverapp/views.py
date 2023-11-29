@@ -10,6 +10,100 @@ from django.contrib import messages
 from doughsaverapp.models import *
 from django.urls import reverse
 from django.db import connection
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
+from matplotlib.dates import DateFormatter
+import matplotlib.dates as mdates
+import numpy as np
+import pandas as pd
+from django.conf import settings
+
+
+
+def get_price_history(ingredient_id):
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT StoreID, UpdateTimestamp, HistoricalPrice
+            FROM PriceHistory
+            WHERE IngredientID = %s
+              AND YEAR(UpdateTimestamp) = 2024
+            ORDER BY UpdateTimestamp
+            """,
+            [ingredient_id]
+        )
+        rows = cursor.fetchall()
+    return rows
+
+
+def plot_price_history(ingredient_name, price_history, plot_save_path):
+    # Create a dictionary to store data for each store
+    store_data = {}
+
+    for row in price_history:
+        store_id, timestamp, price = row
+
+        # Convert timestamps to datetime objects
+        timestamp = pd.to_datetime(timestamp)
+
+        # If the store_id is not in the dictionary, create a new entry
+        if store_id not in store_data:
+            store_data[store_id] = {'timestamps': [], 'prices': [], 'label': f'Store {store_id}'}
+
+        # Append data to the corresponding store entry
+        store_data[store_id]['timestamps'].append(timestamp)
+        store_data[store_id]['prices'].append(price)
+
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(14, 5.5))
+
+
+    for store_id, data in store_data.items():
+        ax.plot(data['timestamps'], data['prices'], label=data['label'])
+
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(DateFormatter('%m-%Y'))
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Price')
+    ax.set_title(f'Price History for {ingredient_name}')
+    ax.legend()
+    # Rotate x-axis labels vertically
+    plt.xticks(rotation='vertical')
+    # Add a grid
+    ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.7)
+
+
+    # Save the plot as an image
+    plt.savefig(plot_save_path)
+    plt.close()  # Close the plot to free up resources
+
+def ingredient_price_history(request, ingredient_id):
+    # Get the ingredient name from the Ingredient table
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT IngredientName FROM Ingredient WHERE IngredientID = %s",
+            [ingredient_id]
+        )
+        ingredient_name = cursor.fetchone()[0]
+
+    # Get the price history for the current ingredient
+    price_history = get_price_history(ingredient_id)
+
+    # Define the path to save the Matplotlib plot image
+    plot_save_path = f"media/plots/{ingredient_id}_price_history.png"
+
+    # Plot the price history and save the image
+    plot_price_history(ingredient_name, price_history, plot_save_path)
+
+    # Pass the image file path to the template
+    context = {
+        'ingredient_name': ingredient_name,
+        'plot_image_path': plot_save_path,
+    }
+
+    # Render the template
+    return render(request, 'price_history/ingredient_price_history.html', context)
 
 def index(request):
     if request.method == "POST":
@@ -120,9 +214,39 @@ def ingredient_search(request):
 
     return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items})
     
+def get_current_prices(ingredient_id):
+    current_prices = PriceData.objects.filter(IngredientID=ingredient_id)
+    return current_prices
+    
 def ingredient_detail(request, IngredientID):
+
+    # Get the ingredient object or return a 404 error if not found
     ingredient = get_object_or_404(Ingredient, pk=IngredientID)
-    return render(request, 'ingredient_detail.html', {'ingredient': ingredient})
+
+    # Get the price history for the current ingredient
+    price_history = get_price_history(IngredientID)
+    
+    # Get the current prices for the current ingredient
+    current_prices = get_current_prices(IngredientID)
+    
+    # Define the path to save the Matplotlib plot image
+    plot_save_path = f"media/plots/{IngredientID}_price_history.png"
+
+    # Plot the price history and save the image
+    plot_price_history(ingredient.IngredientName, price_history, plot_save_path)
+
+    # Pass the image file path to the template
+    context = {
+        'ingredient': Ingredient,
+        'current_prices': current_prices,
+        'plot_image_path': plot_save_path,
+        'media_url': settings.MEDIA_URL, 
+
+    }
+
+    # Render the template
+    #return render(request, 'your_app/ingredient_detail.html', context)
+    return render(request, 'ingredient_detail.html', context)
 
 def recipe_search(request):
     search_query = request.GET.get('search_query', '')
