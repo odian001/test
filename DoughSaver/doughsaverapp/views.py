@@ -36,7 +36,6 @@ def get_price_history(ingredient_id):
         rows = cursor.fetchall()
     return rows
 
-
 def plot_price_history(ingredient_name, price_history, plot_save_path):
     # Create a dictionary to store data for each store
     store_data = {}
@@ -59,12 +58,49 @@ def plot_price_history(ingredient_name, price_history, plot_save_path):
     store_names = {store.StoreId: store.StoreName for store in GroceryStore.objects.all()}
 
     # Create the plot
-    fig, ax = plt.subplots(figsize=(14, 5.5))
+    fig, ax = plt.subplots(figsize=(14, 8))
 
     for store_id, data in store_data.items():
         # Use store names in the legend
         store_name = store_names.get(store_id, f'Store {store_id}')
-        ax.plot(data['timestamps'], data['prices'], label=store_name)
+
+        # Combine timestamps and prices into a DataFrame
+        df = pd.DataFrame({'timestamps': data['timestamps'], 'prices': data['prices']})
+        df.set_index('timestamps', inplace=True)
+
+        # Resample data to fill in missing timestamps with the last known price
+        df_resampled = df.resample('D').fillna(method='ffill')
+        
+
+        # Handle any remaining NaN values after forward fill
+        df_resampled['prices'].fillna(method='bfill', inplace=True)
+
+        # Ensure there are no NaN values in the DataFrame
+        df_resampled.dropna(subset=['prices'], inplace=True)
+
+
+        # Extend the last known price to cover the entire year
+        last_known_price = df_resampled['prices'].iloc[-1]
+        end_of_year = pd.to_datetime(f'2024-12-31')
+        
+        # Create a new DataFrame for the end of the year with the last known price
+        df_end_of_year = pd.DataFrame({'prices': [last_known_price]}, index=[end_of_year])
+        
+        # Extend the first known price to cover the entire year
+        first_known_price = df_resampled['prices'].iloc[0]
+        start_of_year = pd.to_datetime(f'2024-01-01')
+        
+        # Create a new DataFrame for the start of the year with the first known price
+        df_start_of_year = pd.DataFrame({'prices': [first_known_price]}, index=[start_of_year])
+
+        # Concatenate the DataFrames to combine the original data and start-of-year data
+        df_resampled = pd.concat([df_start_of_year, df_resampled])
+
+        # Concatenate the DataFrames to combine the original data and end-of-year data
+        df_resampled = pd.concat([df_resampled, df_end_of_year])
+
+        # Plot the data
+        ax.plot(df_resampled.index, df_resampled['prices'], label=store_name)
 
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(DateFormatter('%m-%Y'))
@@ -80,9 +116,6 @@ def plot_price_history(ingredient_name, price_history, plot_save_path):
     # Save the plot as an image
     plt.savefig(plot_save_path)
     plt.close()  # Close the plot to free up resources
-
-    
-
 
 def ingredient_price_history(request, ingredient_id):
     # Get the ingredient name from the Ingredient table
@@ -251,7 +284,7 @@ def ingredient_detail(request, IngredientID):
 
     # Pass the image file path to the template
     context = {
-        'ingredient': Ingredient,
+        'ingredient': ingredient,
         'current_prices': current_prices,
         'plot_image_path': plot_save_path,
         'media_url': settings.MEDIA_URL, 
@@ -259,7 +292,6 @@ def ingredient_detail(request, IngredientID):
     }
 
     # Render the template
-    #return render(request, 'your_app/ingredient_detail.html', context)
     return render(request, 'ingredient_detail.html', context)
 
 def recipe_search(request):

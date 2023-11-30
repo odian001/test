@@ -1,16 +1,14 @@
-<!-- ingredient_detail.html -->
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ ingredient.ingredient_name }}</title>
+    <title>{{ ingredient.IngredientName }}</title>
 </head>
 <body>
-    <h1>{{ ingredient.ingredient_name }}</h1>
+    <center><h1>{{ ingredient.IngredientName }}</h1>
     <!-- Display current prices in a table -->
-	<center>
     <h2>Current Prices</h2>
     <table>
         <thead>
@@ -32,8 +30,8 @@
     </table>
 	</center>
     <!-- Display the Matplotlib plot image -->
-    <img src="{{ media_url }}{{ plot_image_path }}" alt="{{ ingredient.ingredient_name }} Price History">
+    <img src="{{ media_url }}{{ plot_image_path }}" alt="{{ ingredient.IngredientName }} Price History">
 
     <!-- Add other details about the ingredient as needed -->
 </body>
-</html>
+{% endblock %}s
