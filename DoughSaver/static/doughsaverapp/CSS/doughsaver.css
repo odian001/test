@@ -155,3 +155,26 @@
     text-align: center;
   }
   
+  .custom-table{
+    border: 1px solid;
+    border-collapse: collapse;
+    width: 80%;
+    margin-bottom: 20px;
+  }
+
+  .custom-table-td{
+    padding: 20px;
+    text-align: center;
+  }
+
+  .custom-table-th{
+    background-color: #232724;
+    color: white;
+    font-size: 20px;
+    height: 60px; 
+  }
+  
+  .custom-hover-tr:hover
+    {background-color: rgb(225, 100, 54); }
+  
+

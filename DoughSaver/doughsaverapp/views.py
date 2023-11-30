@@ -217,6 +217,14 @@ def ingredient_search(request):
             'CurrentPrice',
             'StoreID__StoreName'
             )
+    else:
+        # Fetch all items from PriceData table if no search query is provided
+        items = PriceData.objects.all().values(
+            'IngredientID',
+            'IngredientID__IngredientName',
+            'CurrentPrice',
+            'StoreID__StoreName'
+        )
 
     return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items})
     
