@@ -19,7 +19,7 @@ urlpatterns = [
     path('recipe_search/', views.recipe_search, name='recipe_search'),
     path('user_ingredients/', user_ingredients, name='user_ingredients'),
     path('shopping_list/<int:list_id>/', shopping_list_detail, name='shopping_list_detail'),
-   # path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail')
+    path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail')
 ]
 
 

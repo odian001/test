@@ -31,12 +31,6 @@ def user_ingredients(request):
     # Pass the data to the template
     return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients})
     
-def shopping_list_detail(request, list_id):
-    # Retrieve the shopping list items for the given list ID
-    shopping_list_items = ShoppingList.objects.filter(ListID=list_id)
-
-    # Pass the data to the template
-    return render(request, 'shopping_list_detail.html', {'shopping_list_items': shopping_list_items})
 
 def get_price_history(ingredient_id):
     with connection.cursor() as cursor:
@@ -331,17 +325,17 @@ def recipe_search(request):
         recipes = list(distinct_recipes.values())
 
     return render(request, 'recipe_search.html', {'search_query': search_query, 'recipes': recipes})
+    
+def shopping_list_detail(request, list_id):
+    # Retrieve the shopping list items for the given list ID
+    shopping_list_items = ShoppingList.objects.filter(ListID=list_id)
 
-'''def recipe_detail(request, RecipeID):
-        recipe_ID = RecipeID
-        recipes = []
-        recipes = Recipe.objects.filter(RecipeID__icontains=recipe_ID)
+    # Pass the data to the template
+    return render(request, 'shopping_list_detail.html', {'shopping_list_items': shopping_list_items})
+
+def recipe_detail(request, RecipeID):
         
-        ingredient_ids = []
-        for recipe in recipes:
-            ingredient_ids = recipe.IngredientID.values_list('IngredientName', flat=True)
+    recipe_items = Recipe.objects.filter(RecipeID=RecipeID)
         
-        # Fetch the ingredients associated with the recipe
-        ingredients = Ingredient.objects.filter(IngredientID__in=Recipe.objects.filter(RecipeID=RecipeID).values_list('IngredientID', flat=True))
-        
-        return render(request, 'recipe_detail.html', {'recipe': recipe, 'ingredients': ingredients})'''
+    # Pass the data to the template
+    return render(request, 'recipe_detail.html', {'recipe_items': recipe_items})

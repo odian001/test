@@ -93,7 +93,7 @@ class Recipe(models.Model):
     RecipeName = models.CharField(max_length=150, db_column='RecipeName')
     IsPrivate = models.BooleanField(db_column='IsPrivate')
     PrivateUID = models.IntegerField(db_column='PrivateUID', null=True)
-    IngredientID = models.ManyToManyField('Ingredient', db_column='IngredientID')
+    Ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
     Quantity = models.DecimalField(max_digits=10, decimal_places=0, db_column='Quantity')
     Unit = models.CharField(max_length=25, db_column='Unit')
 

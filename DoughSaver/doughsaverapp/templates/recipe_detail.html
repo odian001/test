@@ -1,25 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Recipe Ingredients</title>
-</head>
+{% extends 'base.html' %}
+
+{% block content %}
+
 <body>
-    <h1>Ingredients for {{ recipe.RecipeName }}</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Ingredient Name</th>
-                <th>Quantity</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ingredient in ingredients %}
+	<center>
+    <h1>Recipe: {{ recipe_items.0.RecipeName }}</h1>
+
+	<table border="1" class="custom-table">
+            <thead>
                 <tr>
-                    <td>{{ ingredient.IngredientName }}</td>
-                    <td>{{ ingredient.Quantity }}</td>
+                    <th class="custom-table-th">Ingredient Name</th>
+                    <th class="custom-table-th">Quantity</th>
+					<th class="custom-table-th">Unit</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <!-- Search the Items Container to Show What is Found -->
+                {% for item in recipe_items %}
+                    <tr class="custom-hover-tr">
+                        <td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a></td>
+                        <td class="custom-table-td">{{ item.Quantity }}</td>
+						<td class="custom-table-td">{{ item.Unit }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+	</center>
 </body>
-</html>
+{% endblock %}
