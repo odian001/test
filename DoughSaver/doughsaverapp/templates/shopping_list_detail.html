@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<body>
+	<center>
+    <h1>Shopping List: {{ shopping_list_items.0.ListName }}</h1>
+
+	<table border="1" class="custom-table">
+            <thead>
+                <tr>
+                    <th class="custom-table-th">Ingredient Name</th>
+                    <th class="custom-table-th">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Search the Items Container to Show What is Found -->
+                {% for item in shopping_list_items %}
+                    <tr class="custom-hover-tr">
+                        <td class="custom-table-td">
+						
+                            <a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a>
+                        </td>
+
+                        <td class="custom-table-td">{{ item.Quantity }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+	</center>
+</body>
+{% endblock %}

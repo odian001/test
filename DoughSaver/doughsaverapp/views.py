@@ -30,7 +30,13 @@ def user_ingredients(request):
 
     # Pass the data to the template
     return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients})
+    
+def shopping_list_detail(request, list_id):
+    # Retrieve the shopping list items for the given list ID
+    shopping_list_items = ShoppingList.objects.filter(ListID=list_id)
 
+    # Pass the data to the template
+    return render(request, 'shopping_list_detail.html', {'shopping_list_items': shopping_list_items})
 
 def get_price_history(ingredient_id):
     with connection.cursor() as cursor:

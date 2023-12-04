@@ -13,7 +13,6 @@ class Ingredient(models.Model):
     IsPrivate = models.BooleanField(db_column='IsPrivate')
     PrivateUID = models.IntegerField(blank=True, null=True, db_column='PrivateUID')
 
-
 class GroceryStore(models.Model):
     class Meta:
         managed = False
@@ -23,7 +22,20 @@ class GroceryStore(models.Model):
     Address = models.CharField(max_length=75, db_column='Address')
     def __str__(self):
         return self.StoreName + " - " + self.Address
+        
+class ShoppingList(models.Model):
+    class Meta:
+        managed = False
+        db_table = 'ShoppingList'
+    ListID = models.AutoField(primary_key=True, db_column='ListID')
+    ListName = models.CharField(max_length=25, db_column='ListName')
+    Ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
+    StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
+    Quantity = models.IntegerField(db_column='Quantity')
 
+    def __str__(self):
+        return f"{self.ListName} - {self.Ingredient.IngredientName} ({self.Quantity} {self.Ingredient.Unit})"
+        
 class StoreCollection(models.Model):
     UserID = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
     StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')

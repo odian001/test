@@ -1,16 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<head>
-    <title>User Ingredients</title>
-</head>
+
 <body>
+	<center>
     <h1>Tracked Ingredients for {{ user.username }}</h1>
-    <ul>
-        {% for ingredient in user_ingredients %}
-            <li>{{ ingredient.IngredientName }}</li>
-        {% endfor %}
-    </ul>
 	<table border="1" class="custom-table">
             <thead>
                 <tr>
@@ -45,5 +39,6 @@
                 {% endfor %}
             </tbody>
         </table>
+		</center>
 </body>
 {% endblock %}
