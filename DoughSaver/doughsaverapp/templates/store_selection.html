@@ -11,14 +11,14 @@
     {% csrf_token %}
     <ul>
         {% for store in grocery_stores %}
-                <input type="checkbox" id="store_{{ store.StoreId }}" name="store_ids" value="{{ store.StoreId }}">
-                <label for="store_{{ store.StoreId }}">
-                    <img src="{% static 'doughsaverapp/images/stores/' %}{{ store.StoreId }}.svg" alt="{{ store.StoreName }}" width="100" height="100">
-                    <p>   {{ store.Address }}</p>
-                </label>
+            <input type="checkbox" id="store_{{ store.StoreId }}" name="store_ids" value="{{ store.StoreId }}"
+                   {% if store.StoreId in selected_stores %}checked{% endif %}>
+            <label for="store_{{ store.StoreId }}">
+                <img src="{% static 'doughsaverapp/images/stores/' %}{{ store.StoreId }}.svg" alt="{{ store.StoreName }}" width="100" height="100">
+                <p>{{ store.Address }}</p>
+            </label>
         {% endfor %}
     </ul>
     <input type="submit" value="Save Stores">
 </form>
-
 {% endblock %}

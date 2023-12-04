@@ -37,7 +37,10 @@ class ShoppingList(models.Model):
         return f"{self.ListName} - {self.Ingredient.IngredientName} ({self.Quantity} {self.Ingredient.Unit})"
         
 class StoreCollection(models.Model):
-    UserID = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
+    #UserID = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
+    #StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
+    DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
+    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
 
     class Meta:

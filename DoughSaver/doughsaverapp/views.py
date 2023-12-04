@@ -202,9 +202,11 @@ def store_selection(request):
     
         return redirect('price_comparison_options')
 
+    user_id = request.user.id
+    selected_stores = StoreCollection.objects.filter(UserID=user_id).values_list('StoreID', flat=True)
     grocery_stores = GroceryStore.objects.all()
 
-    return render(request, 'store_selection.html', {'grocery_stores': grocery_stores})
+    return render(request, 'store_selection.html', {'grocery_stores': grocery_stores, 'selected_stores': selected_stores})
 
 def price_comparison_options(request):
     if request.method == 'POST':
