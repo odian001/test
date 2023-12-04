@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ <center>
+  <h1>Your Tracked Recipes</h1>
+  {% if user_recipes %}
+    <table border="1" class="custom-table">
+				<thead>
+					<tr>
+						<th class="custom-table-th">Recipe Name</th>
+					</tr>
+				</thead>
+				<tbody>
+        {% for recipe in user_recipes %}
+          <tr class="custom-hover-tr">
+							<td class="custom-table-td"><a href="{% url 'recipe_detail' RecipeID=recipe.RecipeID %}">{{ recipe.RecipeName }}</a></td>
+            <!-- Add more columns as needed -->
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>You haven't tracked any recipes yet.</p>
+  {% endif %}
+    </center>
+
+{% endblock %}

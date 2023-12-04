@@ -341,3 +341,17 @@ def recipe_detail(request, RecipeID):
         
     # Pass the data to the template
     return render(request, 'recipe_detail.html', {'recipe_items': recipe_items})
+    
+@login_required
+def user_recipes(request):
+    # Retrieve the currently logged-in user
+    user = request.user.id
+
+    # Retrieve the ingredients associated with the user
+    user_recipes = Recipe.objects.filter(recipecollection__UserID=user).values('RecipeID', 'RecipeName').distinct()
+
+    # Pass the data to the template
+    return render(request, 'user_recipes.html', {'user_recipes': user_recipes})
+    
+    
+    

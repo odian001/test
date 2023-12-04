@@ -63,6 +63,7 @@ class IngredientCollection(models.Model):
     def __str__(self):
         return f'{self.UserID} - Ingredient Collection'
     
+
 class PriceData(models.Model):
     class Meta:
         unique_together = ('StoreID', 'IngredientID')
@@ -100,6 +101,20 @@ class Recipe(models.Model):
     Quantity = models.DecimalField(max_digits=10, decimal_places=0, db_column='Quantity')
     Unit = models.CharField(max_length=25, db_column='Unit')
 
+class RecipeCollection(models.Model):
+    # UserID = models.ForeignKey(User, on_delete=models.CASCADE, db_column='UserID')
+    # RecipeID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='RecipeID')
+    DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
+    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
+    RecipeID = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column='RecipeID')
+    class Meta:
+        managed = False
+        db_table = 'RecipeCollection'
+        unique_together = (('UserID', 'RecipeID'),)
+
+    def __str__(self):
+        return f'{self.UserID} - Recipe Collection'
+        
 #class Shopping
 
 class AuthGroup(models.Model):
