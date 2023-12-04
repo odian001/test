@@ -18,7 +18,18 @@ import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
+@login_required
+def user_ingredients(request):
+    # Retrieve the currently logged-in user
+    user = request.user
+
+    # Retrieve the ingredients associated with the user
+    user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user)
+
+    # Pass the data to the template
+    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients})
 
 
 def get_price_history(ingredient_id):

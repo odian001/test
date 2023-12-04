@@ -35,7 +35,19 @@ class StoreCollection(models.Model):
 
     def __str__(self):
         return f'{self.UserID} - Store Collection'
-   
+        
+class IngredientCollection(models.Model):
+    UserID = models.ForeignKey(User, on_delete=models.CASCADE, db_column='UserID')
+    IngredientID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
+
+    class Meta:
+        managed = False
+        db_table = 'IngredientCollection'
+        unique_together = (('UserID', 'IngredientID'),)
+
+    def __str__(self):
+        return f'{self.UserID} - Ingredient Collection'
+    
 class PriceData(models.Model):
     class Meta:
         unique_together = ('StoreID', 'IngredientID')

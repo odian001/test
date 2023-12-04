@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<head>
+    <title>User Ingredients</title>
+</head>
+<body>
+    <h1>Tracked Ingredients for {{ user.username }}</h1>
+    <ul>
+        {% for ingredient in user_ingredients %}
+            <li>{{ ingredient.IngredientName }}</li>
+        {% endfor %}
+    </ul>
+	<table border="1" class="custom-table">
+            <thead>
+                <tr>
+                    <th class="custom-table-th">Ingredient Name</th>
+                    <th class="custom-table-th">Add to List</th>
+                    <th class="custom-table-th">Track Item?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Search the Items Container to Show What is Found -->
+                {% for item in user_ingredients %}
+                    <tr class="custom-hover-tr">
+                        <td class="custom-table-td">
+                            <a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientName }}</a>
+                        </td>
+
+                        <td class="custom-table-td">
+                            <form method="post" action={ url 'add_to_shopping_list'}>
+                                {% csrf_token %} <!-- Needs Implementation for Shopping List-->
+                                <input type="hidden" name="ingredient_id">
+                                <button type="submit">Add to Shopping List</button>
+                            </form>
+                        </td>
+                        <td class="custom-table-td">
+                            <form method="post" action="">
+                                {% csrf_token %} <!-- Needs Implementation for Shopping List-->
+                                <input type="hidden" name="ingredient_id">
+                                <button type="submit">Track Item</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+</body>
+{% endblock %}
