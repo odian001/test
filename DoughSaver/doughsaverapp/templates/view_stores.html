@@ -2,10 +2,38 @@
 
 {% block content %}
 
+<h1>Your Shopping Lists</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ListID</th>
+            <th>ListName</th>
+            <th>IngredientID</th>
+            <th>StoreID</th>
+            <th>Quantity</th>
+            <th>Budget</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Display Shopping Lists -->
+        {% for shopping_list in user_lists %}
+        <tr>
+            <td>{{ shopping_list.ListID }}</td>
+            <td>{{ shopping_list.ListName }}</td>
+            <td>{{ shopping_list.IngredientID }}</td>
+            <td>{{ shopping_list.StoreID }}</td>
+            <td>{{ shopping_list.Quantity }}</td>
+            <td>{{ shopping_list.Budget }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
 <h1>Your Store Collection</h1>
 <ul>
     {% for user_store in user_stores %}
-        <li>{{ user_store }}</li>
+        <li>{{ user_store.StoreName }}-{{ user_store.Address }}</li>
     {% endfor %}
 </ul>
 
