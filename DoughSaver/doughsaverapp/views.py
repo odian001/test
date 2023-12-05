@@ -383,4 +383,33 @@ def untrack_item(request):
     # Redirect back to the user_ingredients page
     return redirect('user_ingredients')
     
+@login_required
+def track_recipe(request):
+    if request.method == 'POST':
+        # Get the recipe_id from the form data
+        recipe_id = request.POST.get('recipe_id')
+
+        # Retrieve the currently logged-in user
+        user = request.user.id
+
+        # Add the entry to the RecipeCollection table
+        RecipeCollection.objects.get_or_create(UserID_id=user, RecipeID_id=recipe_id)
+
+    # Redirect back to the user_recipes page
+    return redirect('user_recipes')
+
+@login_required
+def untrack_recipe(request):
+    if request.method == 'POST':
+        # Get the recipe_id from the form data
+        recipe_id = request.POST.get('recipe_id')
+
+        # Retrieve the currently logged-in user
+        user = request.user
+
+        # Remove the entry from the IngredientCollection table
+        RecipeCollection.objects.filter(UserID=user.id, RecipeID=recipe_id).delete()
+
+    # Redirect back to the user_recipes page
+    return redirect('user_recipes')
     
