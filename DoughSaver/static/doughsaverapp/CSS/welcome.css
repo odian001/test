@@ -1,0 +1,31 @@
+/* Style for the welcome-message container */
+.welcome-message {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    /*background-color: #f4f4f4;*/
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style for the heading */
+  .welcome-message h2 {
+    color: #333;
+  }
+  
+  /* Style for the subheading */
+  .welcome-message h3 {
+    color: #555;
+  }
+  
+  /* Style for the paragraphs */
+  .welcome-message p {
+    color: #666;
+    margin-bottom: 15px;
+  }
+  
+  /* Add a bit of spacing between elements for better readability */
+  .welcome-message * {
+    margin-bottom: 10px;
+  }
