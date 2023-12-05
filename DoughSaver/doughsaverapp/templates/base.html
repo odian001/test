@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{% static 'doughsaverapp/CSS/doughsaver.css' %}">
 <link rel="stylesheet" href="{% static 'doughsaverapp/CSS/pricecomparison.css' %}">
 <link rel="stylesheet" href="{% static 'doughsaverapp/CSS/welcome.css' %}">
+<link rel="stylesheet" href="{% static 'doughsaverapp/CSS/shoppinglist.css' %}">
 <!--<link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon-16x16.png">
@@ -41,6 +42,7 @@
     <div class="dropdown-content" id="shop manager">
       <a href="#">Shop Manager</a>
       <a href="{% url 'store_selection'%}">Select Stores</a>
+      <a href="{% url 'shopping_lists'%}">Manage Shopping Lists</a>
       <a href="{% url 'price_comparison_options'%}">Price Comparison</a>
 	  <a href="{% url 'user_ingredients'%}">My Ingredients</a>
 	  <a href="{% url 'user_recipes'%}">My Recipes</a>

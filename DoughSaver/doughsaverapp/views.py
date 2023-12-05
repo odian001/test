@@ -205,6 +205,33 @@ def store_selection(request):
 
     return render(request, 'store_selection.html', {'grocery_stores': grocery_stores, 'selected_stores': selected_stores})
 
+def shopping_lists(request, list_id=None):
+    user_id = request.user.id
+    #if the user adds a new shopping list
+    #get name and add it to the users shopping list collection and add listid and name to shopping list model
+    if request.method == "POST":
+        shopping_list_name = request.POST.get('shopping_list_name')
+
+        # Get the existing list of shopping list names from the session
+        shopping_list_names = request.session.get('created_list_name', [])
+
+        # Append the new shopping list name
+        shopping_list_names.append(shopping_list_name)
+
+        # Store the updated list back in the session
+        request.session['created_list_name'] = shopping_list_names
+
+        # The shopping list was created, print message
+        messages.success(request, mark_safe(f"New shopping list created with Name: {shopping_list_name}<br>"))
+
+        # Redirect to the newly created shopping list
+        return redirect('shopping_lists')
+
+    #get user shopping lists
+    UserListID = ShoppingListCollection.objects.filter(UserID=user_id).values('ListID')
+
+    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id})
+
 def price_comparison_options(request):
     if request.method == 'POST':
         #save the checkbox values in a list

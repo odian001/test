@@ -1,0 +1,44 @@
+/* Dropdown Button */
+.sl_dropbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    border: none;
+    margin-right: 100px;
+  }
+  
+  /* The container <div> - needed to position the dropdown content */
+  .sl_dropdown {
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .sl_dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .sl_dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .sl_dropdown-content a:hover {background-color: #ddd;}
+  
+  /* Show the dropdown menu on hover */
+  .sl_dropdown:hover .sl_dropdown-content {display: block;}
+  
+  /* Change the background color of the dropdown button when the dropdown content is shown */
+  .sl_dropdown:hover .sl_dropbtn {background-color: #3e8e41;}
+  /*.sl_dropdown:hover .sl_dropbtn {background-color: #b04925;}*/

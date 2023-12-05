@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <h2>Your Shopping Lists</h2>
+
+    {% if messages %}
+     {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+
+    <!--Display dropdown with a list of shopping lists to choose from-->
+    <div class="sl_dropdown">
+    <button class="sl_dropbtn">Shopping Lists</button>
+    <div class="sl_dropdown-content">
+        {% for listID in UserListID %}
+            <a href="{% url 'shopping_lists_with_id' listID.ListID %}">{{ listID.ListName }}</a>
+        {% endfor %}
+    </div>
+    </div>
+    <br>
+
+    <!--Display chosen shopping list heading, if no list exists, display you have no lists-->
+    <!--Display chosen shopping list items-->
+    {% if selected_list_id %}
+        <h2>{{ selected_list.ListName }}</h2>
+        {% for selected_list in UserListID %}
+            {% if selected_list.ListID == selected_list_id %}
+            <p>Ingredient ID: {{ selected_list.IngredientID }}</p>
+            <p>Store ID: {{ selected_list.StoreID }}</p>
+            <p>Quantity: {{ selected_list.Quantity }}</p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+    <p>You have not selected a shopping list.</p>
+    {% endif %}
+
+    <!--To the right allow a user to add a new shopping list, with placeholder - Add new Shopping List-->
+    <form method="post" action="{% url 'shopping_lists' %}">
+        {% csrf_token %}
+          <input type="text" placeholder="Enter New Shopping List Name..." name="shopping_list_name">
+         <button type="submit">Submit</button>
+    </form>
+
+
+{% endblock %}

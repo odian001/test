@@ -25,6 +25,8 @@ urlpatterns = [
     path('track_item/', track_item, name='track_item'),
     path('untrack_recipe/', untrack_recipe, name='untrack_recipe'),
     path('track_recipe/', track_recipe, name='track_recipe'),
+    path('shopping_lists/', views.shopping_lists, name='shopping_lists'),
+    path('shopping_lists/<int:list_id>/', views.shopping_lists, name='shopping_lists_with_id'),
 
 
 ]
