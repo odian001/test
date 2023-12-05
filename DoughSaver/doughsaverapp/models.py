@@ -36,9 +36,21 @@ class ShoppingList(models.Model):
     def __str__(self):
         return f"{self.ListName} - {self.Ingredient.IngredientName} ({self.Quantity} {self.Ingredient.Unit})"
         
+        
+class ShoppingListCollection(models.Model):
+    DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
+    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
+    ListID = models.ForeignKey(ShoppingList, on_delete=models.CASCADE, db_column='ListID')
+
+    class Meta:
+        managed = False
+        db_table = 'ShoppingListCollection'
+        unique_together = (('UserID', 'ListID'),)
+
+    def __str__(self):
+        return f'{self.UserID} - Shopping List Collection'
+        
 class StoreCollection(models.Model):
-    #UserID = models.OneToOneField('AuthUser', models.DO_NOTHING, db_column='UserID', primary_key=True)
-    #StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
     DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
     UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
@@ -52,8 +64,6 @@ class StoreCollection(models.Model):
         return f'{self.UserID} - Store Collection'
         
 class IngredientCollection(models.Model):
-    #UserID = models.ForeignKey(User, on_delete=models.CASCADE, db_column='UserID')
-    #IngredientID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
     DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
     UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     IngredientID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
@@ -104,8 +114,6 @@ class Recipe(models.Model):
     Unit = models.CharField(max_length=25, db_column='Unit')
 
 class RecipeCollection(models.Model):
-    # UserID = models.ForeignKey(User, on_delete=models.CASCADE, db_column='UserID')
-    # RecipeID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='RecipeID')
     DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
     UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     RecipeID = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column='RecipeID')
