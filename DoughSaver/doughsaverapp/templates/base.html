@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="{% static 'doughsaverapp/CSS/account.css' %}">
 <link rel="stylesheet" href="{% static 'doughsaverapp/CSS/doughsaver.css' %}">
 <link rel="stylesheet" href="{% static 'doughsaverapp/CSS/pricecomparison.css' %}">
+<link rel="stylesheet" href="{% static 'doughsaverapp/CSS/welcome.css' %}">
 <!--<link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon-16x16.png">
@@ -24,9 +25,8 @@
 <!--NAVBAR CONTENT-->
 <body>
 <div class="navbar">
-  <a href="">Link</a>
-  <a href="">Link</a>
-
+  {% if user.is_authenticated %}
+  <a href="{% url 'index'%}">Homepage</a>
   <div class="dropdown" >
     <button class="dropbtn" onclick="dropdown('search')">Search</button>
     <div class="dropdown-content" id="search">
@@ -47,9 +47,8 @@
     </div>
   </div>
 
-
-  {% if user.is_authenticated %}
     <a href="{% url 'logout' %}">Logout</a>
+
   {% else %}
     <a href="{% url 'index' %}">Login</a>
     <a href="{% url 'accountcreation' %}">Register</a>

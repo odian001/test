@@ -4,12 +4,21 @@
 
   {% if user.is_authenticated %}
     <!-- Welcome message for logged-in users -->
-	<center>
+	<!--<center>-->
     <div class="welcome-message">
-      <h1>Welcome, {{ user.username }}!</h1>
+      <h2>Welcome, {{ user.username }}!</h2>
       <!-- Add any other welcome content here -->
+      <h3>Saving money on your next shop with Dough Saver is just steps away!</h3>
+      <p>Select Shop Manager tab then Select Stores</p>
+      <p>Add your preferred store(s)</p>
+      <p>Navigate to Manage Lists from the Shop Manager</p>
+      <p>Create a new shopping List</p>
+      <p>Navigate to the Item Search or Recipe Search tab from Search</p>
+      <p>Start selecting items or recipes to add to your shopping list</p>
+      <p>Navigate to Price Comparisons from Shop Manager</p>
+      <p>Select a Price Comparison option and we will do the rest!</p>
     </div>
-	</center>
+	<!--</center>-->
   {% else %}
     <!-- Login form for non-logged-in users -->
     <form action="" method="post">
