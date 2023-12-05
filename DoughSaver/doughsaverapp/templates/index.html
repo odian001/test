@@ -21,7 +21,7 @@
 	<!--</center>-->
   {% else %}
     <!-- Login form for non-logged-in users -->
-    <form action="" method="post">
+    <form action="{% url 'index'%}" method="post">
 
       <!-- Cross Site Request Forgery Cookie -->
       {% csrf_token %} 

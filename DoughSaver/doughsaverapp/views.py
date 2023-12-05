@@ -163,8 +163,7 @@ def index(request):
         if user is not None:
             login(request, user)
             # Redirect to a success page.
-            messages.success(request, mark_safe("Welcome, you have successfully logged in!<br>"))
-            return redirect('index') #uses name ='index' from urls.py
+            return redirect('index')
         else:
             # Return an 'invalid login' error message.
             messages.success(request, mark_safe("Incorrect username or password, please try again.<br>"))
@@ -174,7 +173,6 @@ def index(request):
     
 def logout_user(request):
     logout(request)
-    messages.success(request, mark_safe("You were successfully logged out.<br>"))
     return redirect('index')
 
 def accountcreation(request):
@@ -186,7 +184,6 @@ def accountcreation(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request, user)
-            messages.success(request, mark_safe("You were successfully registered.<br>"))
             return redirect('index')
     else:
         form = UserCreationForm()
