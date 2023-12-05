@@ -35,11 +35,11 @@
                             </form>
                         </td>
                         <td class="custom-table-td">
-                            <form method="post" action="">
-                                {% csrf_token %} <!-- Needs Implementation for Shopping List-->
-                                <input type="hidden" name="ingredient_id">
-                                <button type="submit">Track Item</button>
-                            </form>
+                            <form method="post" action="{% url 'track_item' %}">
+								{% csrf_token %}
+								<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
+								<button type="submit">Track Item</button>
+							</form>
                         </td>
                     </tr>
                 {% endfor %}

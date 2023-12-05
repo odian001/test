@@ -52,9 +52,11 @@ class StoreCollection(models.Model):
         return f'{self.UserID} - Store Collection'
         
 class IngredientCollection(models.Model):
-    UserID = models.ForeignKey(User, on_delete=models.CASCADE, db_column='UserID')
+    #UserID = models.ForeignKey(User, on_delete=models.CASCADE, db_column='UserID')
+    #IngredientID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
+    DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
+    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     IngredientID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
-
     class Meta:
         managed = False
         db_table = 'IngredientCollection'

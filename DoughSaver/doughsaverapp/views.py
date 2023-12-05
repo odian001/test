@@ -26,7 +26,7 @@ def user_ingredients(request):
     user = request.user
 
     # Retrieve the ingredients associated with the user
-    user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user)
+    user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user.id)
 
     # Pass the data to the template
     return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients})
@@ -352,6 +352,35 @@ def user_recipes(request):
 
     # Pass the data to the template
     return render(request, 'user_recipes.html', {'user_recipes': user_recipes})
-    
+
+@login_required
+def track_item(request):
+    if request.method == 'POST':
+        # Get the ingredient_id from the form data
+        ingredient_id = request.POST.get('ingredient_id')
+
+        # Retrieve the currently logged-in user
+        user = request.user.id
+
+        # Add the entry to the IngredientCollection table
+        IngredientCollection.objects.get_or_create(UserID_id=user, IngredientID_id=ingredient_id)
+
+    # Redirect back to the user_ingredients page
+    return redirect('user_ingredients')
+
+@login_required
+def untrack_item(request):
+    if request.method == 'POST':
+        # Get the ingredient_id from the form data
+        ingredient_id = request.POST.get('ingredient_id')
+
+        # Retrieve the currently logged-in user
+        user = request.user
+
+        # Remove the entry from the IngredientCollection table
+        IngredientCollection.objects.filter(UserID=user.id, IngredientID=ingredient_id).delete()
+
+    # Redirect back to the user_ingredients page
+    return redirect('user_ingredients')
     
     

@@ -30,10 +30,10 @@
 								</form>
 							</td>
 							<td class="custom-table-td">
-								<form method="post" action="">
-									{% csrf_token %} <!-- Needs Implementation for Shopping List-->
-									<input type="hidden" name="ingredient_id">
-									<button type="submit">Track Item</button>
+								<form method="post" action="{% url 'untrack_item' %}">
+									{% csrf_token %}
+									<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
+									<button type="submit">Untrack Item</button>
 								</form>
 							</td>
 						</tr>
@@ -41,7 +41,7 @@
 				</tbody>
 			</table>
 		{% else %}
-		<p>You haven't tracked any recipes yet.</p>
+		<p>You haven't tracked any ingredients yet.</p>
 		{% endif %}
 		</center>
 </body>

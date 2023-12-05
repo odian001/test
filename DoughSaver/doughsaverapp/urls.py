@@ -20,7 +20,11 @@ urlpatterns = [
     path('user_ingredients/', user_ingredients, name='user_ingredients'),
     path('user_recipes/', user_recipes, name='user_recipes'),
     path('shopping_list/<int:list_id>/', shopping_list_detail, name='shopping_list_detail'),
-    path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail')
+    path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail'),
+    path('untrack_item/', untrack_item, name='untrack_item'),
+    path('track_item/', track_item, name='track_item'),
+
+
 ]
 
 
