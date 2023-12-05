@@ -8,12 +8,28 @@
 				<thead>
 					<tr>
 						<th class="custom-table-th">Recipe Name</th>
+						<th class="custom-table-th">Add to List</th>
+						<th class="custom-table-th">Track Item?</th>
 					</tr>
 				</thead>
 				<tbody>
         {% for recipe in user_recipes %}
           <tr class="custom-hover-tr">
 							<td class="custom-table-td"><a href="{% url 'recipe_detail' RecipeID=recipe.RecipeID %}">{{ recipe.RecipeName }}</a></td>
+							<td class="custom-table-td">
+								<form method="post" action={ url 'add_to_shopping_list'}>
+									{% csrf_token %} <!-- Needs Implementation for Shopping List-->
+									<input type="hidden" name="recipe_id">
+									<button type="submit">Add to Shopping List</button>
+								</form>
+							</td>
+							<td class="custom-table-td">
+								<form method="post" action="{% url 'untrack_recipe' %}">
+									{% csrf_token %}
+									<input type="hidden" name="recipe_id" value="{{ recipe.RecipeID }}">
+									<button type="submit">Untrack Recipe</button>
+								</form>
+							</td>
             <!-- Add more columns as needed -->
           </tr>
         {% endfor %}

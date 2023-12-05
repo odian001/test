@@ -23,6 +23,8 @@ urlpatterns = [
     path('recipe/<int:RecipeID>/', views.recipe_detail, name='recipe_detail'),
     path('untrack_item/', untrack_item, name='untrack_item'),
     path('track_item/', track_item, name='track_item'),
+    path('untrack_recipe/', untrack_recipe, name='untrack_recipe'),
+    path('track_recipe/', track_recipe, name='track_recipe'),
 
 
 ]

@@ -31,13 +31,13 @@
                                 <button type="submit">Add to Shopping List</button>
                             </form>
                         </td>
-                        <td class="custom-table-td">
-                        <form method="post" action="">
-                            {% csrf_token %} <!-- Needs Implementation for Shopping List-->
-                            <input type="hidden" name="recipe_id">
-                            <button type="submit">Track Item</button>
-                        </form>
-                        </td>
+						<td class="custom-table-td">
+							<form method="post" action="{% url 'track_recipe' %}">
+								{% csrf_token %}
+								<input type="hidden" name="recipe_id" value="{{ recipe.RecipeID }}">
+								<button type="submit">Track Recipe</button>
+							</form>
+						</td>
                     </tr>
                 {% endfor %}
             </tbody>
