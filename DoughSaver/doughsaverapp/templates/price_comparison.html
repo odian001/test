@@ -16,30 +16,33 @@
         {% endfor %}
     {% endif %}
 
-    <label class="switch">
-        <input type="checkbox" id="best_store_cost" name="pricing_options" value="beststore">
-        <span class="slider round"></span>
-        <p class="pswitch"> Best Store Cost </p>
-    </label>
+    <div style="margin-left: 20px;" class="switch-container">
+        <label  class="switch">
+           <input type="checkbox" id="best_store_cost" name="pricing_options" value="beststore">
+         <span class="slider round"></span>
+         <p class="pswitch"> Best Store Cost </p>
+        </label>
       
-    <label class="switch">
-        <input type="checkbox" id="best_mix_cost" name="pricing_options" value="bestmix">
-        <span class="slider round"></span>
-        <p class="pswitch"> Best Mix Cost </p>
-    </label>
+        <label class="switch">
+            <input type="checkbox" id="best_mix_cost" name="pricing_options" value="bestmix">
+             <span class="slider round"></span>
+            <p class="pswitch"> Best Mix Cost </p>
+        </label>
     
-    <label class="switch">
-        <input type="checkbox" id="savings_percent" name="pricing_options" value="savingspercent">
-        <span class="slider round"></span>
-        <p class="pswitch"> Savings Percent </p>
-    </label>
+        <label class="switch">
+             <input type="checkbox" id="savings_percent" name="pricing_options" value="savingspercent">
+            <span class="slider round"></span>
+            <p class="pswitch"> Savings Percent </p>
+        </label>
+    </div>
 
-
-    <h3>Current Preferred Store(s)</h3>
+    <h3 style="margin-left: 20px;">Current Preferred Store(s)</h3>
+    <div style="margin-left: 20px;" class="stores-container">
         {% for user_store in user_stores %}
             <img src="{% static 'doughsaverapp/images/stores/' %}{{ user_store.StoreID }}.svg" alt="{{ store.StoreName }}" 
                  width="100" height="100" style="margin: 5px 10px 10px 5px;">
         {% endfor %}
+    </div>
     <br>
     <!--<input type="submit" value="Select Option">-->
     <button type="submit">Select Option</button>
