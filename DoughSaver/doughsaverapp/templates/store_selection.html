@@ -5,9 +5,9 @@
 
 {% block content %}
 
-<h2>SELECT PREFERRED STORE(S)</h2>
+<h2 style="margin-left: 20px;">SELECT PREFERRED STORE(S)</h2>
 
-<form method="post" action="{% url 'store_selection' %}">
+<!--<form method="post" action="{% url 'store_selection' %}">
     {% csrf_token %}
     <ul>
         {% for store in grocery_stores %}
@@ -20,5 +20,24 @@
         {% endfor %}
     </ul>
     <input type="submit" value="Save Stores">
+</form>-->
+
+<form method="post" action="{% url 'store_selection' %}" class="checklist-form">
+    {% csrf_token %}
+    <div class="store-rows">
+        {% for store in grocery_stores %}
+            <div class="store-checkbox">
+                <input type="checkbox" id="store_{{ store.StoreId }}" name="store_ids" value="{{ store.StoreId }}"
+                       {% if store.StoreId in selected_stores %}checked{% endif %}>
+                <label for="store_{{ store.StoreId }}">
+                    <img src="{% static 'doughsaverapp/images/stores/' %}{{ store.StoreId }}.svg" alt="{{ store.StoreName }}" width="100" height="100">
+                    <p>{{ store.Address }}</p>
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+    <!--<input type="submit" value="Save Stores">-->
+    <button type="submit">Save Stores</button>
 </form>
+
 {% endblock %}
