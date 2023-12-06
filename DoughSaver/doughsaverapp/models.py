@@ -67,6 +67,8 @@ class IngredientCollection(models.Model):
     DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
     UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     IngredientID = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
+    TargetPrice = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, db_column='target_price')
+
     class Meta:
         managed = False
         db_table = 'IngredientCollection'
@@ -117,6 +119,8 @@ class RecipeCollection(models.Model):
     DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
     UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
     RecipeID = models.ForeignKey(Recipe, on_delete=models.CASCADE, db_column='RecipeID')
+    TargetPrice = models.DecimalField(max_digits=6, decimal_places=2, blank=True, null=True, db_column='target_price')
+
     class Meta:
         managed = False
         db_table = 'RecipeCollection'

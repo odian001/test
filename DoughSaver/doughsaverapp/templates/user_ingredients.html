@@ -10,6 +10,7 @@
 				<thead>
 					<tr>
 						<th class="custom-table-th">Ingredient Name</th>
+						<th class="custom-table-th">Target Price</th>
 						<th class="custom-table-th">Add to List</th>
 						<th class="custom-table-th">Track Item?</th>
 					</tr>
@@ -18,14 +19,22 @@
 					<!-- Search the Items Container to Show What is Found -->
 					{% for item in user_ingredients %}
 						<tr class="custom-hover-tr">
+
 							<td class="custom-table-td">
 								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientName }}</a>
 							</td>
-
+							<td class="custom-table-td">
+								<form method="post" action="{% url 'update_price' %}">
+									{% csrf_token %}
+									<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
+									<input type="number" step="0.01" name="target_price" value="{{ ingredient_collection.item.TargetPrice|default_if_none:'' }}">
+									<button type="submit">Update Price</button>
+								</form>
+							</td>
 							<td class="custom-table-td">
 								<form method="post" action={ url 'add_to_shopping_list'}>
 									{% csrf_token %} <!-- Needs Implementation for Shopping List-->
-									<input type="hidden" name="ingredient_id">
+									<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
 									<button type="submit">Add to Shopping List</button>
 								</form>
 							</td>

@@ -20,17 +20,39 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
+# def user_ingredients(request):
+    # user = request.user
+    # ingredient_collection = IngredientCollection.objects.filter(UserID=user.id)
+    # user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user.id)
+    
+    # return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'target_price': ingredient_collection.target_price}) 
+@login_required
+def update_price(request):
+    if request.method == 'POST':
+        user_id = request.user.id
+        ingredient_id = request.POST.get('ingredient_id')
+        target_price = request.POST.get('target_price')
+        
+        ingredient_collection = IngredientCollection.objects.get(UserID=user_id, IngredientID=ingredient_id)
+        ingredient_collection.TargetPrice = target_price
+        ingredient_collection.save()
+
+        return redirect('user_ingredients')
+
+    # Handle GET request or other cases
+    return render(request, 'user_ingredients.html')
+    
 @login_required
 def user_ingredients(request):
     # Retrieve the currently logged-in user
     user = request.user
 
     # Retrieve the ingredients associated with the user
+    ingredient_collections = IngredientCollection.objects.filter(UserID=user.id)
     user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user.id)
 
     # Pass the data to the template
-    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients})
-    
+    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections})
 
 def get_price_history(ingredient_id):
     with connection.cursor() as cursor:
