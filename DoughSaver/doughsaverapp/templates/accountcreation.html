@@ -8,12 +8,17 @@
 
 {% endif %}
 
-<form action="" style="border:1px solid #ccc" method="post">
+<form class="custom-form" action="" style="border:1px solid #ccc" method="post">
   
   <!--Cross Site Request Forgery Cookie-->
-  {% csrf_token %}
 
+  {% csrf_token %}
+  <br><br>
   {{ form.as_p }}
+  <br><br>
+
+  <button type="submit" class="signupbtn">Sign Up</button>
+</form>
 
   <!--<div class="SignUpContainer">
     <h1>Create An Account</h1>
@@ -43,8 +48,6 @@
       <button type="submit" class="signupbtn">Sign Up</button>
       <button type="cancel" class="cancelbtn">Cancel</button>
   </div>-->
-  <button type="submit" class="signupbtn">Sign Up</button>
-</form>
 
 {% endblock %}
 
