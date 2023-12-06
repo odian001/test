@@ -23,14 +23,20 @@
 							<td class="custom-table-td">
 								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientName }}</a>
 							</td>
-							<td class="custom-table-td">
-								<form method="post" action="{% url 'update_price' %}">
-									{% csrf_token %}
-									<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
-									<input type="number" step="0.01" name="target_price" value="{{ ingredient_collection.item.TargetPrice|default_if_none:'' }}">
-									<button type="submit">Update Price</button>
-								</form>
-							</td>
+							{% for collection in ingredient_collections %}
+								{% if collection.IngredientID.IngredientID == item.IngredientID %}
+									<td class="custom-table-td">
+										<form method="post" action="{% url 'update_price' %}">
+											{% csrf_token %}
+											<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
+											<input type="number" step="0.01" name="target_price" value="{{ collection.TargetPrice|default_if_none:'' }}">
+											<button type="submit">Update Price</button>
+										</form>
+									</td>							
+								{% endif %}
+								
+							{% endfor %}
+
 							<td class="custom-table-td">
 								<form method="post" action={ url 'add_to_shopping_list'}>
 									{% csrf_token %} <!-- Needs Implementation for Shopping List-->
