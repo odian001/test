@@ -251,8 +251,10 @@ def shopping_lists(request, list_id=None):
 
     #get user shopping lists
     UserListID = ShoppingListCollection.objects.filter(UserID=user_id).values('ListID')
+    # Temporarily use session to show added shopping list names
+    shopping_list_names = request.session.get('created_list_name', [])
 
-    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id})
+    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names})
 
 def price_comparison_options(request):
     if request.method == 'POST':
