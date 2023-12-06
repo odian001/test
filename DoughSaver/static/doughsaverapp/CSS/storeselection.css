@@ -1,0 +1,62 @@
+/* Style for each row of store checkboxes */
+.store-rows {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust the gap between store checkboxes */
+    margin-left: 100px;
+  }
+  
+  /* Style for each store checkbox */
+  .store-checkbox {
+    flex: 0 0 calc(33.33% - 20px); /* Adjust the width of each store checkbox */
+    position: relative;
+  }
+  
+  /* Style for the label containing the store image */
+  .store-checkbox label {
+    cursor: pointer;
+    display: block;
+    /*margin-right: 100px !important;*/
+  }
+  
+  /* Optional: Add some styling for checkboxes if needed */
+  input[type="checkbox"] {
+    display: none; /* Hide the default checkbox */
+  }
+  
+  /* Style for the custom checkbox appearance */
+  input[type="checkbox"] + label {
+    position: relative;
+    padding-left: 30px; /* Adjust the spacing for the custom checkbox */
+  }
+  
+  input[type="checkbox"] + label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px; /* Adjust the size of the custom checkbox */
+    height: 20px; /* Adjust the size of the custom checkbox */
+    border: 2px solid #333; /* Adjust the border color */
+    background-color: #fff;
+  }
+  
+  /* Style for the custom checkbox when selected */
+  input[type="checkbox"]:checked + label:before {
+    background-color: #04AA6D; /* Adjust the background color when selected */
+    border-color: #04AA6D; /* Adjust the border color when selected */
+  }
+  
+  /* Optional: Add styling for the store image */
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px; /* Add border-radius for rounded corners */
+  }
+  
+  /* Optional: Add styling for the store address */
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
