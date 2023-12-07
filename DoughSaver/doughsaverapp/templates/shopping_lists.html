@@ -12,21 +12,12 @@
         {% endfor %}
     {% endif %}
 
-    <!--Display dropdown with a list of shopping lists to choose from-->
-   <!--<div class="sl_dropdown">
-    <button class="sl_dropbtn">Shopping Lists</button>
-    <div class="sl_dropdown-content">
-        {% for listID in UserListID %}
-            <a href="{% url 'shopping_lists_with_id' listID.ListID %}">{{ listID.ListName }}</a>
-        {% endfor %}
-    </div>
-    </div>-->
 
     <div class="sl_dropdown">
         <button class="sl_dropbtn">Shopping Lists</button>
         <div class="sl_dropdown-content">
-            {% for listName in session_list %}
-                <a href="{% url 'shopping_lists' %}">{{ listName }}</a>
+            {% for list in UserListID %}
+                <a href="{% url 'shopping_lists_with_id' list_id=list.ListID %}">{{ list.ListName }}</a>
             {% endfor %}
         </div>
         </div>
@@ -34,17 +25,31 @@
 
     <!--Display chosen shopping list heading, if no list exists, display you have no lists-->
     <!--Display chosen shopping list items-->
+	<center>
     {% if selected_list_id %}
-        <h2>{{ selected_list.ListName }}</h2>
-        {% for selected_list in UserListID %}
-            {% if selected_list.ListID == selected_list_id %}
-            <p>Ingredient ID: {{ selected_list.IngredientID }}</p>
-            <p>Store ID: {{ selected_list.StoreID }}</p>
-            <p>Quantity: {{ selected_list.Quantity }}</p>
-            {% endif %}
+	        <h2>{{ selected_list.ListName }}</h2>
+		<table border="1" class="custom-table">
+		<thead>
+			<tr>
+				<th class="custom-table-th">Ingredient Name</th>
+				<th class="custom-table-th">Store</th>
+				<th class="custom-table-th">Quantity</th>
+			</tr>
+		</thead>
+		<tbody>
+        {% for item in shopping_list_items %}
+			<tr class="custom-hover-tr">
+				<td class="custom-table-td">
+				
+					<a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a>
+				</td>
+				<td class="custom-table-td">{{ item.StoreID.StoreName }}</td>
+				<td class="custom-table-td">{{ item.Quantity }}</td>
+			</tr>
         {% endfor %}
+			</tbody>
+			</table>
     {% else %}
-    <center>
     <p>You have not selected a shopping list.</p>
     </center>
     {% endif %}

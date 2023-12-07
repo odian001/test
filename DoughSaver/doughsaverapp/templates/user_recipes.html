@@ -23,7 +23,7 @@
 										<form method="post" action="{% url 'target_price_recipe' %}">
 											{% csrf_token %}
 											<input type="hidden" name="recipe_id" value="{{ recipe.RecipeID }}">
-											<input name="target_price" value="{{ collection.TargetPrice|default_if_none:'66.66' }}">
+											<input name="target_price" value="{{ collection.TargetPrice|default_if_none:'' }}">
 											<button type="submit">Update Price</button>
 										</form>
 									</td>		

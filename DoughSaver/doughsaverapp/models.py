@@ -51,7 +51,7 @@ class ShoppingList(models.Model):
 class ShoppingListCollection(models.Model):
     DjangoID = models.AutoField(primary_key=True, unique=True, db_column='DjangoID')
     UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
-    ListID = models.ForeignKey(ShoppingList, on_delete=models.CASCADE, db_column='ListID')
+    ListID = models.ForeignKey(ShoppingListNames, on_delete=models.CASCADE, db_column='ListID')
 
     class Meta:
         managed = False

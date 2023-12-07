@@ -38,9 +38,9 @@
                         <td class="custom-table-td">
                             <form method="post" action="{% url 'ingredient_search' %}">
                                 {% csrf_token %} <!-- Needs Implementation for Shopping List-->
-                                <select name="session_shopping_list" id="session_shopping_list">
-                                    {% for list_name in session_list_names %}
-                                        <option value="{{ list_name }}">{{ list_name }}</option>
+                                <select name="shoppingList" id="shoppingList">
+									{% for shopping_list in shopping_lists %}
+                                        <option value="{{ shopping_list.ListID }}">{{ shopping_list.ListName }}</option>
                                     {% endfor %}
                                 </select>
                                 <input type="number" name="quantity" value="1" min="1">

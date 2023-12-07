@@ -252,33 +252,35 @@ def store_selection(request):
     return render(request, 'store_selection.html', {'grocery_stores': grocery_stores, 'selected_stores': selected_stores})
 
 def shopping_lists(request, list_id=None):
-    user_id = request.user.id
+    user_id = AuthUser.objects.get(id=request.user.id)
     #if the user adds a new shopping list
     #get name and add it to the users shopping list collection and add listid and name to shopping list model
     if request.method == "POST":
         shopping_list_name = request.POST.get('shopping_list_name')
+        # # Get the existing list of shopping list names from the session
+        # shopping_list_names = request.session.get('created_list_name', [])
 
-        # Get the existing list of shopping list names from the session
-        shopping_list_names = request.session.get('created_list_name', [])
+        # # Append the new shopping list name
+        # shopping_list_names.append(shopping_list_name)
 
-        # Append the new shopping list name
-        shopping_list_names.append(shopping_list_name)
-
-        # Store the updated list back in the session
-        request.session['created_list_name'] = shopping_list_names
+        # # Store the updated list back in the session
+        # request.session['created_list_name'] = shopping_list_names
+        
+        ShoppingListNames.objects.create(ListName=shopping_list_name,UserID=user_id)
 
         # The shopping list was created, print message
         messages.success(request, mark_safe(f"New shopping list created with Name: {shopping_list_name}<br>"))
 
-        # Redirect to the newly created shopping list
-        return redirect('shopping_lists')
+    if list_id != None:
+        selected_list=ShoppingListNames.objects.get(ListID=list_id)
+        shopping_list_items=ShoppingList.objects.filter(ListID=list_id)
 
     #get user shopping lists
-    UserListID = ShoppingListCollection.objects.filter(UserID=user_id).values('ListID')
+    UserListID = ShoppingListNames.objects.filter(UserID=user_id)
     # Temporarily use session to show added shopping list names
     shopping_list_names = request.session.get('created_list_name', [])
 
-    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names})
+    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items})
 
 def price_comparison_options(request):
     if request.method == 'POST':
@@ -326,69 +328,97 @@ def price_history_list(request):
     return render(request, 'price_history_list.html', context)
 
 def ingredient_search(request):
-    session_list_names = request.session.get('created_list_name', [])
-    user_id = AuthUser.objects.get(id=request.user.id)
-    #user_id = request.user.id
+    # session_list_names = request.session.get('created_list_name', [])
+    # user_id = AuthUser.objects.get(id=request.user.id)
+    # #user_id = request.user.id
 
+    # if request.method == 'POST':
+        # # Get the posted shopping list name and ingredient id
+        # selected_list_name = request.POST.get('session_shopping_list')
+        # ingredient_id = request.POST.get('ingredient_id')
+        # store_id = request.POST.get('store_id')
+        # quantity = request.POST.get('quantity')
+
+        # if selected_list_name is None:
+            # messages.error(request, mark_safe(f"<br><br>Please select a shopping list or create one before adding items.<br><br>"))
+            # return redirect('item_search')
+
+        # # Check if a ShoppingListCollection with the same User and ListName exists
+        # existing_entry = ShoppingListCollection.objects.filter(
+            # UserID=user_id,
+            # ListID__ListName=selected_list_name
+        # ).first()
+
+        # # Use the existing ListID, otherwise use the next available ListID 
+        # if existing_entry:
+            # # Get or create a ShoppingList instance based on ListName and existing ListID
+            # shopping_list, created = ShoppingList.objects.get_or_create(
+                # ListID=existing_entry.ListID.ListID,
+                # ListName=selected_list_name,
+                # Ingredient_id=ingredient_id,
+                # StoreID_id=store_id,
+                # Quantity=quantity,
+                # #Budget=None,
+            # )
+        # else:
+            # # Find the maximum existing ListID for this user and increment
+            # max_list_id = ShoppingListCollection.objects.filter(UserID=user_id).aggregate(models.Max('ListID'))['ListID__max']
+            # list_id = max_list_id + 1 if max_list_id is not None else 1
+            # # Get or create a ShoppingList instance based on ListName and next available ListID
+            # shopping_list, created = ShoppingList.objects.get_or_create(
+                # ListID=list_id,
+                # ListName=selected_list_name,
+                # Ingredient_id=ingredient_id,
+                # StoreID_id=store_id,
+                # Quantity=quantity,
+                # #Budget=None,
+            # )
+
+        # # Check if the object is created (not retrieved from the database)
+        # if created:
+            # # Explicitly save only if the object is created
+            # messages.error(request, mark_safe(f"<br><br>Your item was added to the {selected_list_name} shopping list.<br><br>"))
+            # #shopping_list.save()
+        # else:
+            # # Handle the case where the object already exists
+            # messages.error(request, mark_safe(f"<br><br>This item already exists in your shopping list.<br><br>"))
+
+        # # Create or get the ShoppingListCollection entry
+        # shopping_list_collection, created = ShoppingListCollection.objects.get_or_create(
+            # UserID=user_id,
+            # ListID=shopping_list
+        # )
+
+        # return redirect('ingredient_search')
+        
     if request.method == 'POST':
-        # Get the posted shopping list name and ingredient id
-        selected_list_name = request.POST.get('session_shopping_list')
+        # Get data from the form
+        shopping_list_id = request.POST.get('shoppingList')
+        quantity = request.POST.get('quantity')
         ingredient_id = request.POST.get('ingredient_id')
         store_id = request.POST.get('store_id')
-        quantity = request.POST.get('quantity')
+        
+        grocery_store = GroceryStore.objects.get(StoreId=store_id)
+        ingredient = Ingredient.objects.get(IngredientID=ingredient_id)
 
-        if selected_list_name is None:
-            messages.error(request, mark_safe(f"<br><br>Please select a shopping list or create one before adding items.<br><br>"))
-            return redirect('item_search')
-
-        # Check if a ShoppingListCollection with the same User and ListName exists
-        existing_entry = ShoppingListCollection.objects.filter(
-            UserID=user_id,
-            ListID__ListName=selected_list_name
-        ).first()
-
-        # Use the existing ListID, otherwise use the next available ListID 
-        if existing_entry:
-            # Get or create a ShoppingList instance based on ListName and existing ListID
-            shopping_list, created = ShoppingList.objects.get_or_create(
-                ListID=existing_entry.ListID.ListID,
-                ListName=selected_list_name,
-                Ingredient_id=ingredient_id,
-                StoreID_id=store_id,
-                Quantity=quantity,
-                #Budget=None,
-            )
-        else:
-            # Find the maximum existing ListID for this user and increment
-            max_list_id = ShoppingListCollection.objects.filter(UserID=user_id).aggregate(models.Max('ListID'))['ListID__max']
-            list_id = max_list_id + 1 if max_list_id is not None else 1
-            # Get or create a ShoppingList instance based on ListName and next available ListID
-            shopping_list, created = ShoppingList.objects.get_or_create(
-                ListID=list_id,
-                ListName=selected_list_name,
-                Ingredient_id=ingredient_id,
-                StoreID_id=store_id,
-                Quantity=quantity,
-                #Budget=None,
-            )
-
-        # Check if the object is created (not retrieved from the database)
-        if created:
-            # Explicitly save only if the object is created
-            messages.error(request, mark_safe(f"<br><br>Your item was added to the {selected_list_name} shopping list.<br><br>"))
-            #shopping_list.save()
-        else:
-            # Handle the case where the object already exists
-            messages.error(request, mark_safe(f"<br><br>This item already exists in your shopping list.<br><br>"))
-
-        # Create or get the ShoppingListCollection entry
-        shopping_list_collection, created = ShoppingListCollection.objects.get_or_create(
-            UserID=user_id,
-            ListID=shopping_list
+        # Create an entry in the ShoppingList table
+        ShoppingList.objects.create(
+            ListID=shopping_list_id,
+            Ingredient=ingredient,
+            StoreID=grocery_store,
+            Quantity=quantity
         )
 
-        return redirect('ingredient_search')
+    # Redirect to a success page or the same page
+        return redirect('ingredient_search')  # Replace 'success_page' with the actual page name
 
+    # Replace 'your_user_id' with the actual user ID or retrieve it from the request
+    user = request.user 
+
+    # Retrieve shopping lists for the user
+    shopping_lists = ShoppingListNames.objects.filter(UserID=user.id)
+
+    
     search_query = request.GET.get('search_query', '')
     items = []
 
@@ -410,7 +440,7 @@ def ingredient_search(request):
             'StoreID__StoreName'
         )
 
-    return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items, 'session_list_names': session_list_names})
+    return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items,'shopping_lists': shopping_lists})
     
 def get_current_prices(ingredient_id):
     current_prices = PriceData.objects.filter(IngredientID=ingredient_id)
@@ -539,4 +569,13 @@ def untrack_recipe(request):
 
     # Redirect back to the user_recipes page
     return redirect('user_recipes')
+    
+def shopping_list_names(request):
+    # Replace 'your_user_id' with the actual user ID or retrieve it from the request
+    user = request.user 
+
+    # Retrieve shopping lists for the user
+    shopping_lists = ShoppingListNames.objects.filter(UserID=user.id)
+
+    return render(request, 'ingredient_search.html', {'shopping_lists': shopping_lists})
     
