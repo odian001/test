@@ -22,13 +22,24 @@ class GroceryStore(models.Model):
     Address = models.CharField(max_length=75, db_column='Address')
     def __str__(self):
         return self.StoreName + " - " + self.Address
+       
+class ShoppingListNames(models.Model):
+    class Meta:
+        managed = False
+        db_table = 'ShoppingListNames'
+    ListID = models.AutoField(primary_key=True, db_column='ListID')
+    ListName = models.CharField(max_length=75, db_column='ListName')
+    UserID = models.ForeignKey('AuthUser', models.DO_NOTHING, db_column='UserID')
+
+    def __str__(self):
+        return f"{self.ListName} - {self.Ingredient.IngredientName} ({self.Quantity} {self.Ingredient.Unit})"
         
 class ShoppingList(models.Model):
     class Meta:
         managed = False
         db_table = 'ShoppingList'
+        unique_together = (('ListID', 'Ingredient'),)
     ListID = models.AutoField(primary_key=True, db_column='ListID')
-    ListName = models.CharField(max_length=25, db_column='ListName')
     Ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, db_column='IngredientID')
     StoreID = models.ForeignKey(GroceryStore, on_delete=models.CASCADE, db_column='StoreID')
     Quantity = models.IntegerField(db_column='Quantity')

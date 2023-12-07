@@ -20,12 +20,7 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
-# def user_ingredients(request):
-    # user = request.user
-    # ingredient_collection = IngredientCollection.objects.filter(UserID=user.id)
-    # user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user.id)
-    
-    # return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'target_price': ingredient_collection.target_price}) 
+
 @login_required
 def target_price_ingredient(request):
     if request.method == 'POST':
