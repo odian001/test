@@ -271,16 +271,16 @@ def shopping_lists(request, list_id=None):
         # The shopping list was created, print message
         messages.success(request, mark_safe(f"New shopping list created with Name: {shopping_list_name}<br>"))
 
-    if list_id != None:
-        selected_list=ShoppingListNames.objects.get(ListID=list_id)
-        shopping_list_items=ShoppingList.objects.filter(ListID=list_id)
-
     #get user shopping lists
     UserListID = ShoppingListNames.objects.filter(UserID=user_id)
     # Temporarily use session to show added shopping list names
     shopping_list_names = request.session.get('created_list_name', [])
+    if list_id != None:
+        selected_list=ShoppingListNames.objects.get(ListID=list_id)
+        shopping_list_items=ShoppingList.objects.filter(ListID=list_id)
+        return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items})
 
-    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items})
+    return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names,})
 
 def price_comparison_options(request):
     if request.method == 'POST':
