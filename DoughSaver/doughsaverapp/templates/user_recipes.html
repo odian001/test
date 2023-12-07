@@ -8,14 +8,28 @@
 				<thead>
 					<tr>
 						<th class="custom-table-th">Recipe Name</th>
+						<th class="custom-table-th">Target Price</th>
 						<th class="custom-table-th">Add to List</th>
-						<th class="custom-table-th">Track Item?</th>
+						<th class="custom-table-th">Track Recipe?</th>
 					</tr>
 				</thead>
 				<tbody>
         {% for recipe in user_recipes %}
           <tr class="custom-hover-tr">
 							<td class="custom-table-td"><a href="{% url 'recipe_detail' RecipeID=recipe.RecipeID %}">{{ recipe.RecipeName }}</a></td>
+							{% for collection in recipe_collections %}
+								{% if collection.RecipeID_id == recipe.RecipeID %}
+									<td class="custom-table-td">
+										<form method="post" action="{% url 'target_price_recipe' %}">
+											{% csrf_token %}
+											<input type="hidden" name="recipe_id" value="{{ recipe.RecipeID }}">
+											<input name="target_price" value="{{ collection.TargetPrice|default_if_none:'66.66' }}">
+											<button type="submit">Update Price</button>
+										</form>
+									</td>		
+								{% endif %}
+								
+							{% endfor %}
 							<td class="custom-table-td">
 								<form method="post" action={ url 'add_to_shopping_list'}>
 									{% csrf_token %} <!-- Needs Implementation for Shopping List-->

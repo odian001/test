@@ -27,7 +27,7 @@ from django.contrib.auth.decorators import login_required
     
     # return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'target_price': ingredient_collection.target_price}) 
 @login_required
-def update_price(request):
+def target_price_ingredient(request):
     if request.method == 'POST':
         user_id = request.user.id
         ingredient_id = request.POST.get('ingredient_id')
@@ -42,6 +42,21 @@ def update_price(request):
     # Handle GET request or other cases
     return render(request, 'user_ingredients.html')
     
+def target_price_recipe(request):
+    if request.method == 'POST':
+        user_id = request.user.id
+        recipe_id = request.POST.get('recipe_id')
+        target_price = request.POST.get('target_price')
+        
+        recipe_collection = RecipeCollection.objects.get(UserID=user_id, RecipeID=recipe_id)
+        recipe_collection.TargetPrice = target_price
+        recipe_collection.save()
+
+        return redirect('user_recipes')
+
+    # Handle GET request or other cases
+    return render(request, 'user_recipes.html')
+    
 @login_required
 def user_ingredients(request):
     # Retrieve the currently logged-in user
@@ -53,6 +68,20 @@ def user_ingredients(request):
 
     # Pass the data to the template
     return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections})
+    
+@login_required
+def user_recipes(request):
+    # Retrieve the currently logged-in user
+    user = request.user
+
+    # Retrieve the ingredients associated with the user
+    recipe_collections = RecipeCollection.objects.filter(UserID=user.id)   
+    user_recipes = Recipe.objects.filter(recipecollection__UserID=user.id).values('RecipeID', 'RecipeName').distinct()
+
+
+    # Pass the data to the template
+    return render(request, 'user_recipes.html', {'user_recipes': user_recipes, 'recipe_collections': recipe_collections})
+
 
 def get_price_history(ingredient_id):
     with connection.cursor() as cursor:
@@ -455,17 +484,6 @@ def recipe_detail(request, RecipeID):
         
     # Pass the data to the template
     return render(request, 'recipe_detail.html', {'recipe_items': recipe_items})
-    
-@login_required
-def user_recipes(request):
-    # Retrieve the currently logged-in user
-    user = request.user.id
-
-    # Retrieve the ingredients associated with the user
-    user_recipes = Recipe.objects.filter(recipecollection__UserID=user).values('RecipeID', 'RecipeName').distinct()
-
-    # Pass the data to the template
-    return render(request, 'user_recipes.html', {'user_recipes': user_recipes})
 
 @login_required
 def track_item(request):
