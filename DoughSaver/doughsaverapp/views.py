@@ -3,6 +3,7 @@ from django.template import loader
 from django.views.generic import ListView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 #from .forms import StoreSelectionForm
 from django.utils.safestring import mark_safe 
@@ -413,33 +414,61 @@ def ingredient_search(request):
         return redirect('ingredient_search')  # Replace 'success_page' with the actual page name
 
     # Replace 'your_user_id' with the actual user ID or retrieve it from the request
-    user = request.user 
+    user = request.user.id
 
     # Retrieve shopping lists for the user
-    shopping_lists = ShoppingListNames.objects.filter(UserID=user.id)
+    shopping_lists = ShoppingListNames.objects.filter(UserID=user)
 
     
+    #search_query = request.GET.get('search_query', '')
+   # items = []
     search_query = request.GET.get('search_query', '')
-    items = []
 
-    if search_query:
-            items = PriceData.objects.filter(IngredientID__IngredientName__icontains=search_query).values(
-            'IngredientID',
-            'IngredientID__IngredientName',
-            'CurrentPrice',
-            'StoreID',
-            'StoreID__StoreName'
+    items = PriceData.objects.all()
+
+    # Fetch stores associated with the current user
+    user_stores = StoreCollection.objects.filter(UserID=user).values_list('StoreID', flat=True)
+
+    if user_stores:
+        # If user has collected stores, filter by stores when there's a search query
+        if search_query:
+            items = items.filter(
+                IngredientID__IngredientName__icontains=search_query,
+                StoreID__in=user_stores
             )
-    else:
-        # Fetch all items from PriceData table if no search query is provided
-        items = PriceData.objects.all().values(
-            'IngredientID',
-            'IngredientID__IngredientName',
-            'CurrentPrice',
-            'StoreID',
-            'StoreID__StoreName'
-        )
+        else:
+            items = items.filter(StoreID__in=user_stores)
+    elif search_query:
+        # If no stores collected but there's a search query, filter by search query only
+        items = items.filter(IngredientID__IngredientName__icontains=search_query)
 
+    # Fetch the values for the filtered items
+    items = items.values(
+        'IngredientID',
+        'IngredientID__IngredientName',
+        'CurrentPrice',
+        'StoreID',
+        'StoreID__StoreName'
+    )
+#    if search_query:
+ #           items = PriceData.objects.filter(IngredientID__IngredientName__icontains=search_query).values(
+  #          'IngredientID',
+   #         'IngredientID__IngredientName',
+    #        'CurrentPrice',
+     #       'StoreID',
+      #      'StoreID__StoreName'
+       #     )
+    #else:
+        # Fetch all items from PriceData table if no search query is provided
+     #   items = PriceData.objects.all().values(
+      #      'IngredientID',
+       #     'IngredientID__IngredientName',
+        #    'CurrentPrice',
+         #   'StoreID',
+         #   'StoreID__StoreName'
+        #)
+         # Fetch stores associated with the current user
+    
     return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items,'shopping_lists': shopping_lists})
     
 def get_current_prices(ingredient_id):
