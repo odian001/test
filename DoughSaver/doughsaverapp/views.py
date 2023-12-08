@@ -578,4 +578,17 @@ def shopping_list_names(request):
     shopping_lists = ShoppingListNames.objects.filter(UserID=user.id)
 
     return render(request, 'ingredient_search.html', {'shopping_lists': shopping_lists})
+
+def remove_item_from_list(request):
+    if request.method == 'POST':
+        # Get the form data
+        ingredient_id = request.POST.get('ingredient_id')
+        list_id = request.POST.get('list_id')
+
+
+        # Remove the entry from the IngredientCollection table
+        ShoppingList.objects.filter(ListID=list_id, Ingredient_id=ingredient_id).delete()
+
+    return redirect(f'/shopping_lists/{list_id}/')
+    
     

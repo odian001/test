@@ -15,11 +15,10 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
-
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `DoughSaverDB` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `DoughSaverDB`;
 
+USE `DoughSaverDB`;
+--
 --
 -- Table structure for table `Customer`
 --
@@ -149,11 +148,14 @@ DROP TABLE IF EXISTS `IngredientCollection`;
 CREATE TABLE `IngredientCollection` (
   `UserID` int(11) NOT NULL,
   `IngredientID` int(7) NOT NULL,
-  PRIMARY KEY (`UserID`,`IngredientID`),
+  `DjangoID` int(11) NOT NULL AUTO_INCREMENT,
+  `target_price` float(6,2) DEFAULT NULL,
+  PRIMARY KEY (`DjangoID`),
   UNIQUE KEY `IngredientID` (`IngredientID`),
+  KEY `ShoppingListCollection_UserID_AuthUser_ID` (`UserID`),
   CONSTRAINT `IngredientCollection_IngredientID_Ingredient_IngredientID` FOREIGN KEY (`IngredientID`) REFERENCES `Ingredient` (`IngredientID`),
   CONSTRAINT `IngredientCollection_UserID_AuthUser_ID` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,6 +164,14 @@ CREATE TABLE `IngredientCollection` (
 
 LOCK TABLES `IngredientCollection` WRITE;
 /*!40000 ALTER TABLE `IngredientCollection` DISABLE KEYS */;
+INSERT INTO `IngredientCollection` VALUES
+(2,28,3,3.00),
+(2,26,4,2.69),
+(2,25,5,2.50),
+(2,27,6,1.85),
+(6,4,8,NULL),
+(6,17,9,NULL),
+(6,11,10,NULL);
 /*!40000 ALTER TABLE `IngredientCollection` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -17904,11 +17914,14 @@ DROP TABLE IF EXISTS `RecipeCollection`;
 CREATE TABLE `RecipeCollection` (
   `UserID` int(11) NOT NULL,
   `RecipeID` int(7) NOT NULL,
-  PRIMARY KEY (`UserID`,`RecipeID`),
-  KEY `RecipeCollection_RecipeID_Recipe_RecipeID` (`RecipeID`),
-  CONSTRAINT `RecipeCollection_RecipeID_Recipe_RecipeID` FOREIGN KEY (`RecipeID`) REFERENCES `Recipe` (`RecipeID`),
-  CONSTRAINT `RecipeCollection_UserID_AuthUser_ID` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `DjangoID` int(11) NOT NULL AUTO_INCREMENT,
+  `target_price` float(6,2) DEFAULT NULL,
+  PRIMARY KEY (`DjangoID`),
+  KEY `fk_recipe` (`RecipeID`),
+  KEY `fk_user_recipe` (`UserID`),
+  CONSTRAINT `fk_recipe` FOREIGN KEY (`RecipeID`) REFERENCES `Recipe` (`RecipeID`),
+  CONSTRAINT `fk_user_recipe` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -17917,6 +17930,9 @@ CREATE TABLE `RecipeCollection` (
 
 LOCK TABLES `RecipeCollection` WRITE;
 /*!40000 ALTER TABLE `RecipeCollection` DISABLE KEYS */;
+INSERT INTO `RecipeCollection` VALUES
+(2,2,2,12.99),
+(6,1,3,25.77);
 /*!40000 ALTER TABLE `RecipeCollection` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -17929,7 +17945,6 @@ DROP TABLE IF EXISTS `ShoppingList`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ShoppingList` (
   `ListID` int(7) NOT NULL,
-  `ListName` varchar(25) NOT NULL,
   `IngredientID` int(7) NOT NULL,
   `StoreID` int(7) NOT NULL,
   `Quantity` int(11) NOT NULL,
@@ -17949,15 +17964,21 @@ CREATE TABLE `ShoppingList` (
 LOCK TABLES `ShoppingList` WRITE;
 /*!40000 ALTER TABLE `ShoppingList` DISABLE KEYS */;
 INSERT INTO `ShoppingList` VALUES
-(1,'Breakfast',12,1,1,NULL),
-(1,'Breakfast',15,1,1,NULL),
-(1,'Breakfast',22,1,1,NULL),
-(1,'Breakfast',28,1,1,NULL),
-(1,'Breakfast',29,1,1,NULL),
-(2,'Fancy Dinner',2,4,2,NULL),
-(2,'Fancy Dinner',13,3,1,NULL),
-(2,'Fancy Dinner',15,3,1,NULL),
-(2,'Fancy Dinner',26,4,1,NULL);
+(1,1,1,1,NULL),
+(1,2,4,2,NULL),
+(1,13,3,1,NULL),
+(1,15,3,1,NULL),
+(1,26,4,1,NULL),
+(2,12,1,1,NULL),
+(2,15,1,1,NULL),
+(2,22,1,1,NULL),
+(2,28,1,1,NULL),
+(5,13,1,14,NULL),
+(6,10,1,71,NULL),
+(7,3,1,12,NULL),
+(8,12,1,1,NULL),
+(8,15,1,999,NULL),
+(8,22,2,2,NULL);
 /*!40000 ALTER TABLE `ShoppingList` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -17971,11 +17992,12 @@ DROP TABLE IF EXISTS `ShoppingListCollection`;
 CREATE TABLE `ShoppingListCollection` (
   `UserID` int(11) NOT NULL,
   `ListID` int(7) NOT NULL,
-  PRIMARY KEY (`UserID`,`ListID`),
+  `DjangoID` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`DjangoID`),
   KEY `ShoppingListCollection_ListID_ShoppingList_ListID` (`ListID`),
-  CONSTRAINT `ShoppingListCollection_ListID_ShoppingList_ListID` FOREIGN KEY (`ListID`) REFERENCES `ShoppingList` (`ListID`),
+  KEY `ShoppingListCollection_UserID_AuthUser_ID` (`UserID`),
   CONSTRAINT `ShoppingListCollection_UserID_AuthUser_ID` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -17984,7 +18006,44 @@ CREATE TABLE `ShoppingListCollection` (
 
 LOCK TABLES `ShoppingListCollection` WRITE;
 /*!40000 ALTER TABLE `ShoppingListCollection` DISABLE KEYS */;
+INSERT INTO `ShoppingListCollection` VALUES
+(1,1,1),
+(2,1,2),
+(2,2,3);
 /*!40000 ALTER TABLE `ShoppingListCollection` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ShoppingListNames`
+--
+
+DROP TABLE IF EXISTS `ShoppingListNames`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ShoppingListNames` (
+  `ListID` int(11) NOT NULL AUTO_INCREMENT,
+  `ListName` varchar(25) NOT NULL,
+  `UserID` int(11) NOT NULL,
+  PRIMARY KEY (`ListID`),
+  KEY `UserID` (`UserID`),
+  CONSTRAINT `ShoppingListNames_ibfk_2` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ShoppingListNames`
+--
+
+LOCK TABLES `ShoppingListNames` WRITE;
+/*!40000 ALTER TABLE `ShoppingListNames` DISABLE KEYS */;
+INSERT INTO `ShoppingListNames` VALUES
+(1,'Fancy Dinner',2),
+(2,'Breakfast',2),
+(5,'New List Name',2),
+(6,'Christmas',2),
+(7,'ShoppingList',2),
+(8,'Dummy List',6);
+/*!40000 ALTER TABLE `ShoppingListNames` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -17997,11 +18056,13 @@ DROP TABLE IF EXISTS `StoreCollection`;
 CREATE TABLE `StoreCollection` (
   `UserID` int(11) NOT NULL,
   `StoreID` int(7) NOT NULL,
-  PRIMARY KEY (`UserID`,`StoreID`),
-  UNIQUE KEY `StoreID` (`StoreID`),
-  CONSTRAINT `StoreCollection_StoreID_GroceryStore_StoreId` FOREIGN KEY (`StoreID`) REFERENCES `GroceryStore` (`StoreId`),
-  CONSTRAINT `StoreCollection_UserID_AuthUser_ID` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `DjangoID` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`DjangoID`),
+  KEY `fk_store` (`StoreID`),
+  KEY `fk_user` (`UserID`),
+  CONSTRAINT `fk_store` FOREIGN KEY (`StoreID`) REFERENCES `GroceryStore` (`StoreId`),
+  CONSTRAINT `fk_user` FOREIGN KEY (`UserID`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -18010,6 +18071,14 @@ CREATE TABLE `StoreCollection` (
 
 LOCK TABLES `StoreCollection` WRITE;
 /*!40000 ALTER TABLE `StoreCollection` DISABLE KEYS */;
+INSERT INTO `StoreCollection` VALUES
+(2,1,1),
+(2,3,2),
+(2,4,3),
+(5,1,15),
+(5,2,16),
+(5,4,17),
+(5,5,18);
 /*!40000 ALTER TABLE `StoreCollection` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -18158,7 +18227,7 @@ CREATE TABLE `auth_user` (
   `date_joined` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -18167,6 +18236,13 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
+INSERT INTO `auth_user` VALUES
+(1,'pbkdf2_sha256$600000$c7yvm3nCcXfs29JUhv5yok$DuNYtOJ5Cz8Y6+dXhdK3jentZd4tzM32uYzctm7cA/g=','2023-11-28 16:41:16.831763',0,'Jesse','','','',0,1,'2023-11-28 16:41:15.946944'),
+(2,'pbkdf2_sha256$600000$3n7SABo8JSVel18sRtd405$CvsRxBJdIIWdL2B2FOBi0VpKyziE8CGxza9QkWnUK6U=','2023-12-08 12:40:12.153734',0,'Jesse1','','','',0,1,'2023-11-29 23:48:22.407162'),
+(3,'pbkdf2_sha256$600000$NRy4X6Qri91WPqgpsXz3m2$HL7zPey6SguJEhN+rPAGdUbfEFUJBJD/ULB8zmDmSs4=','2023-11-30 23:21:33.196001',0,'test123','','','',0,1,'2023-11-30 23:21:32.219285'),
+(4,'pbkdf2_sha256$600000$piQwkVv1UlJMMkCAza939X$CdZn5KqFvREl1et8hTdYW8vX4HYBU5HEMB8MsUx2x4M=','2023-11-30 23:25:07.694898',0,'test123123','','','',0,1,'2023-11-30 23:25:06.435339'),
+(5,'pbkdf2_sha256$600000$X2L2OjIzhtgzHO5OluIGCq$UobCuF0Z/Z1TUtDLGbJnfF8k6RUcSjycK/YiK1KEnfY=','2023-12-04 22:18:39.522795',0,'forgotmypassword','','','',0,1,'2023-12-04 18:25:49.753852'),
+(6,'pbkdf2_sha256$600000$g0F9bdkEnRUsqahtZ68Lbj$ghA0H4h/4fuDYOF4Uw/tBGsZ+IqyaO00il0kH+veLkU=','2023-12-08 00:12:53.720681',0,'dummy','','','',0,1,'2023-12-08 00:12:52.894246');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -18363,6 +18439,8 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
+INSERT INTO `django_session` VALUES
+('ir3yzuaqfwe2kyahcdgae97add9qdh7o','.eJxVjMsOwiAUBf-FtSFwqWBduu83kPsAqRqalHZl_HdD0oVuz8yct4q4byXuLa1xFnVVoE6_GyE_U-1AHljvi-albutMuiv6oE1Pi6TX7XD_Dgq20uskaIwPyDiGZNkZAMtCgwQCY9wFRwKfExvLGVwQH1y2iOBoOCNZ9fkC_NA4Xw:1rBa9M:ywbwjx5ZjrNcHl721mzc_rGKFGh68cimTegf5bzEsJE','2023-12-22 12:40:12.171271');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -18428,4 +18506,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-14 17:33:10
+-- Dump completed on 2023-12-08 13:09:14

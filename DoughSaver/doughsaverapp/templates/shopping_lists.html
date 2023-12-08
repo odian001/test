@@ -33,18 +33,26 @@
 			<tr>
 				<th class="custom-table-th">Ingredient Name</th>
 				<th class="custom-table-th">Store</th>
+				<th class="custom-table-th">Price</th>
 				<th class="custom-table-th">Quantity</th>
+				<th class="custom-table-th">Remove Item</th>
 			</tr>
 		</thead>
 		<tbody>
         {% for item in shopping_list_items %}
 			<tr class="custom-hover-tr">
-				<td class="custom-table-td">
-				
-					<a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a>
-				</td>
+				<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a></td>
 				<td class="custom-table-td">{{ item.StoreID.StoreName }}</td>
+				<td class="custom-table-td">Price Placeholder</td>
 				<td class="custom-table-td">{{ item.Quantity }}</td>
+				<td class="custom-table-td">
+					<form method="post" action="{% url 'remove_item_from_list' %}">
+						{% csrf_token %}
+						<input type="hidden" name="ingredient_id" value="{{ item.Ingredient.IngredientID }}">
+					    <input type="hidden" name="list_id" value="{{ selected_list.ListID }}">
+						<button type="submit">Remove Item</button>
+					</form>
+				</td>
 			</tr>
         {% endfor %}
 			</tbody>
