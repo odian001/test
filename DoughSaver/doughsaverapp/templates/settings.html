@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+{% load static %}
+    <h2>Update Selected Date</h2>
+    <form method="post" action="">
+        {% csrf_token %}
+        <label for="id_selecteddate">Selected Date:</label>
+        <input type="date" name="selecteddate" id="id_selecteddate" value="{{ user.selecteddate|default:'01/01/2022' }}">
+        <button type="submit">Save</button>
+    </form>
+{% endblock %}

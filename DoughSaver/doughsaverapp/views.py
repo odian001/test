@@ -615,4 +615,17 @@ def remove_item_from_list(request):
 
     return redirect(f'/shopping_lists/{list_id}/')
     
+def settings(request):
+    user = AuthUser.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        selecteddate = request.POST.get('selecteddate')  # Assuming the date field in the form has the name 'selecteddate'
+        if selecteddate:
+            user.selecteddate = selecteddate
+            user.save()
+            messages.success(request, 'Selected date updated successfully.')
+            return redirect('settings')  # Redirect to the user's profile page or wherever you want
+
+
+
+    return render(request, 'settings.html', { 'user': user})
     
