@@ -274,12 +274,16 @@ def shopping_lists(request, list_id=None):
 
     #get user shopping lists
     UserListID = ShoppingListNames.objects.filter(UserID=user_id)
-    # Temporarily use session to show added shopping list names
+    
     shopping_list_names = request.session.get('created_list_name', [])
     if list_id != None:
         selected_list=ShoppingListNames.objects.get(ListID=list_id)
         shopping_list_items=ShoppingList.objects.filter(ListID=list_id)
-        return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items})
+        current_prices=PriceData.objects.none()
+        for item in shopping_list_items:
+            current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id)
+            
+        return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items, 'current_prices': current_prices})
 
     return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names,})
 
