@@ -410,20 +410,19 @@ def ingredient_search(request):
             Quantity=quantity
         )
 
-    # Redirect to a success page or the same page
-        return redirect('ingredient_search')  # Replace 'success_page' with the actual page name
+    # Redirect to a the ingredient search
+        return redirect('ingredient_search')  
 
-    # Replace 'your_user_id' with the actual user ID or retrieve it from the request
+    # Retrieve the user id
     user = request.user.id
 
     # Retrieve shopping lists for the user
     shopping_lists = ShoppingListNames.objects.filter(UserID=user)
 
-    
-    #search_query = request.GET.get('search_query', '')
-   # items = []
+    # Retrieve the search variable
     search_query = request.GET.get('search_query', '')
 
+    # Get all the items in the database
     items = PriceData.objects.all()
 
     # Fetch stores associated with the current user
@@ -436,6 +435,7 @@ def ingredient_search(request):
                 IngredientID__IngredientName__icontains=search_query,
                 StoreID__in=user_stores
             )
+        # If the user has collected stores but not searched
         else:
             items = items.filter(StoreID__in=user_stores)
     elif search_query:
@@ -450,26 +450,17 @@ def ingredient_search(request):
         'StoreID',
         'StoreID__StoreName'
     )
-#    if search_query:
- #           items = PriceData.objects.filter(IngredientID__IngredientName__icontains=search_query).values(
-  #          'IngredientID',
-   #         'IngredientID__IngredientName',
-    #        'CurrentPrice',
-     #       'StoreID',
-      #      'StoreID__StoreName'
-       #     )
-    #else:
-        # Fetch all items from PriceData table if no search query is provided
-     #   items = PriceData.objects.all().values(
-      #      'IngredientID',
-       #     'IngredientID__IngredientName',
-        #    'CurrentPrice',
-         #   'StoreID',
-         #   'StoreID__StoreName'
-        #)
-         # Fetch stores associated with the current user
-    
-    return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': items,'shopping_lists': shopping_lists})
+    # Process items to select only one of each name
+    unique_items = {}
+    for item in items:
+        ingredient_name = item['IngredientID__IngredientName']
+        if ingredient_name not in unique_items:
+            unique_items[ingredient_name] = item
+
+    # Turn it back into a list
+    unique_items = list(unique_items.values())
+
+    return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': unique_items,'shopping_lists': shopping_lists})
     
 def get_current_prices(ingredient_id):
     current_prices = PriceData.objects.filter(IngredientID=ingredient_id)

@@ -20,8 +20,8 @@
             <thead>
                 <tr>
                     <th class="custom-table-th">Ingredient Name</th>
-                    <th class="custom-table-th">Regular Price</th>
-                    <th class="custom-table-th">Store Name</th>
+                   <!-- <th class="custom-table-th">Regular Price</th>-->
+                    <!-- <th class="custom-table-th">Store Name</th>-->
                     <th class="custom-table-th">Add to List</th>
                     <th class="custom-table-th">Track Item?</th>
                 </tr>
@@ -33,11 +33,11 @@
                         <td class="custom-table-td">
                             <a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientID__IngredientName }}</a>
                         </td>
-                        <td class="custom-table-td">{{ item.CurrentPrice }}</td>
-                        <td class="custom-table-td">{{ item.StoreID__StoreName }}</td>
+                       <!-- <td class="custom-table-td">{{ item.CurrentPrice }}</td> -->
+                       <!-- <td class="custom-table-td">{{ item.StoreID__StoreName }}</td> -->
                         <td class="custom-table-td">
                             <form method="post" action="{% url 'ingredient_search' %}">
-                                {% csrf_token %} <!-- Needs Implementation for Shopping List-->
+                                {% csrf_token %}
                                 <select name="shoppingList" id="shoppingList">
 									{% for shopping_list in shopping_lists %}
                                         <option value="{{ shopping_list.ListID }}">{{ shopping_list.ListName }}</option>
