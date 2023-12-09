@@ -27,7 +27,26 @@
     <!--Display chosen shopping list items-->
 	<center>
     {% if selected_list_id %}
-	        <h2>{{ selected_list.ListName }}</h2>
+		<div style="margin-left: 20px;" class="switch-container">
+			<label  class="switch">
+			   <input type="checkbox" id="best_store_cost" name="pricing_options" value="beststore">
+			 <span class="slider round"></span>
+			 <p class="pswitch"> Best Store Cost </p>
+			</label>
+		  
+			<label class="switch">
+				<input type="checkbox" id="best_mix_cost" name="pricing_options" value="bestmix">
+				 <span class="slider round"></span>
+				<p class="pswitch"> Best Mix Cost </p>
+			</label>
+		
+			<label class="switch">
+				 <input type="checkbox" id="savings_percent" name="pricing_options" value="savingspercent">
+				<span class="slider round"></span>
+				<p class="pswitch"> Savings Percent </p>
+			</label>
+		</div>
+		<h2>{{ selected_list.ListName }}</h2>
 		<table border="1" class="custom-table">
 		<thead>
 			<tr>
@@ -73,5 +92,38 @@
          <button type="submit">Submit</button>
     </form>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var selected_list_id = '{{ selected_list_id }}';  // Make sure this is correctly set in your template
+        var currentUrl = window.location.href;
+
+        // Function to check the checkbox based on the current URL
+        function checkCheckbox() {
+            var checkboxes = document.querySelectorAll('input[name="pricing_options"]');
+            checkboxes.forEach(function(checkbox) {
+                // Check if the checkbox value matches the current URL
+                if (currentUrl.includes('/' + checkbox.value + '/')) {
+                    checkbox.checked = true;
+                } else {
+                    checkbox.checked = false;
+                }
+            });
+        }
+
+        // Check the checkbox on page load
+        checkCheckbox();
+
+        // Function to handle checkbox changes
+        var checkboxes = document.querySelectorAll('input[name="pricing_options"]');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                // Redirect based on the checked checkbox and selected_list_id
+                if (checkbox.checked) {
+                    window.location.href = '/shopping_lists/' + selected_list_id + '/' + checkbox.value;
+                }
+            });
+        });
+    });
+</script>
 
 {% endblock %}

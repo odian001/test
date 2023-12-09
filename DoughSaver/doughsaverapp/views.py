@@ -252,7 +252,7 @@ def store_selection(request):
 
     return render(request, 'store_selection.html', {'grocery_stores': grocery_stores, 'selected_stores': selected_stores})
 
-def shopping_lists(request, list_id=None):
+def shopping_lists(request, list_id=None, algorithm=None):
     user_id = AuthUser.objects.get(id=request.user.id)
     #if the user adds a new shopping list
     #get name and add it to the users shopping list collection and add listid and name to shopping list model
@@ -282,6 +282,8 @@ def shopping_lists(request, list_id=None):
         current_prices=PriceData.objects.none()
         for item in shopping_list_items:
             current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id)
+        #if algorithm != None:
+            
             
         return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items, 'current_prices': current_prices})
 
@@ -555,6 +557,7 @@ def recipe_search(request):
             recipes = list(distinct_recipes.values())
 
         return render(request, 'recipe_search.html', {'search_query': search_query, 'recipes': recipes,'shopping_lists': shopping_lists})
+
     
 def shopping_list_detail(request, list_id):
     # Retrieve the shopping list items for the given list ID
@@ -652,16 +655,15 @@ def remove_item_from_list(request):
     return redirect(f'/shopping_lists/{list_id}/')
     
 def settings(request):
-    user = AuthUser.objects.get(id=request.user.id)
+    date_user = AuthUser.objects.get(id=request.user.id)
     if request.method == 'POST':
-        selecteddate = request.POST.get('selecteddate')  # Assuming the date field in the form has the name 'selecteddate'
+        selecteddate = request.POST.get('selecteddate')
         if selecteddate:
-            user.selecteddate = selecteddate
-            user.save()
-            messages.success(request, 'Selected date updated successfully.')
-            return redirect('settings')  # Redirect to the user's profile page or wherever you want
+            date_user.selecteddate = selecteddate
+            date_user.save()
+            return redirect('settings') 
 
 
 
-    return render(request, 'settings.html', { 'user': user})
+    return render(request, 'settings.html', { 'date_user': date_user})
     
