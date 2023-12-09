@@ -22,6 +22,29 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
 
+def get_ingredient_prices(ing_id, store_id):
+    price_data = PriceData.objects.get(IngredientID_id=ing_id, StoreID=store_id)
+    price = price_data.CurrentPrice
+
+    return (price)
+    
+def get_best_store(shopping_list):
+    best_store=None
+    best_price=None
+    stores = GroceryStore.objects.all()
+    for store in stores:
+        store_price=0.00
+        for ing in shopping_list:
+            store_price += get_ingredient_prices(ing.Ingredient_id, store.StoreId)
+        if best_store == None:
+            best_store = store
+            best_price = store_price
+        elif store_price < best_price:
+            best_store = store
+            best_price = store_price
+    
+    return (best_store)
+
 @login_required
 def target_price_ingredient(request):
     if request.method == 'POST':
@@ -277,15 +300,21 @@ def shopping_lists(request, list_id=None, algorithm=None):
     
     shopping_list_names = request.session.get('created_list_name', [])
     if list_id != None:
-        selected_list=ShoppingListNames.objects.get(ListID=list_id)
+        selected_list=ShoppingListNames.objects.get(ListID=list_id )
         shopping_list_items=ShoppingList.objects.filter(ListID=list_id)
         current_prices=PriceData.objects.none()
         for item in shopping_list_items:
             current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id)
-        #if algorithm != None:
-            
-            
-        return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names, 'selected_list': selected_list, 'shopping_list_items': shopping_list_items, 'current_prices': current_prices})
+        best_store=None
+        if algorithm == "beststore":
+            current_prices=PriceData.objects.none()
+            best_store = get_best_store(shopping_list_items)
+            for item in shopping_list_items:
+                current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id, StoreID=best_store.StoreId)
+        return render(request, 'shopping_lists.html', {'UserListID': UserListID,
+        'selected_list_id': list_id, 'session_list': shopping_list_names,
+        'selected_list': selected_list, 'shopping_list_items': shopping_list_items,
+        'current_prices': current_prices, 'best_store': best_store})
 
     return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names,})
 
@@ -666,4 +695,5 @@ def settings(request):
 
 
     return render(request, 'settings.html', { 'date_user': date_user})
-    
+   
+
