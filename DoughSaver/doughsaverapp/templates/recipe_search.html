@@ -24,10 +24,15 @@
                             <!-- Need to figure out how to get each ingredient -->
                             {{ recipe.RecipeName }}
                         </td>
-                        <td class="custom-table-td">
-                            <form method="post" action="">
-                                {% csrf_token %} <!-- Needs Implementation for Shopping List-->
-                                <input type="hidden" name="recipe_id">
+                        <td class="custom-table-td">                     
+                            <form method="post" action="{% url 'recipe_search' %}">
+                                    {% csrf_token %}
+                                    <select name="shoppingList" id="shoppingList">
+                                        {% for shopping_list in shopping_lists %}
+                                            <option value="{{ shopping_list.ListID }}">{{ shopping_list.ListName }}</option>
+                                        {% endfor %}
+                                    </select>
+                                <input type="hidden" name="RecipeID" value="{{ recipe.RecipeID }}">
                                 <button type="submit">Add to Shopping List</button>
                             </form>
                         </td>
