@@ -683,7 +683,7 @@ def remove_item_from_list(request):
 
     return redirect(f'/shopping_lists/{list_id}/')
     
-def settings(request):
+def settings_page(request):
     date_user = AuthUser.objects.get(id=request.user.id)
     if request.method == 'POST':
         selecteddate = request.POST.get('selecteddate')
