@@ -44,7 +44,7 @@
       <a href="#">Shop Manager</a>
       <a href="{% url 'store_selection'%}">Select Stores</a>
       <a href="{% url 'shopping_lists'%}">Manage Shopping Lists</a>
-      <a href="{% url 'price_comparison_options'%}">Price Comparison</a>
+      <!--<a href="{% url 'price_comparison_options'%}">Price Comparison</a>-->
 	  <a href="{% url 'user_ingredients'%}">My Ingredients</a>
 	  <a href="{% url 'user_recipes'%}">My Recipes</a>
     </div>
@@ -66,13 +66,12 @@
 
 {% endblock %}
 
-
-<!--FOOTER CONTENT-->
-<footer class="bg-black small text-center text-white-50">
+  <!--FOOTER CONTENT-->
+  <footer class="bg-black small text-center text-white-50">
     <!--<a href=""></a><br>
     <a href=""></a><br>-->
-<p>&copy; DoughSaver - Compare Prices - Save Money</p>
-</footer>
+  <p>&copy; DoughSaver - Compare Prices - Save Money</p>
+  </footer>
 
 <script src="{% static 'doughsaverapp/js/dropdown.js' %}"></script>
 

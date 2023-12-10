@@ -364,68 +364,6 @@ def price_history_list(request):
     return render(request, 'price_history_list.html', context)
 
 def ingredient_search(request):
-    # session_list_names = request.session.get('created_list_name', [])
-    # user_id = AuthUser.objects.get(id=request.user.id)
-    # #user_id = request.user.id
-
-    # if request.method == 'POST':
-        # # Get the posted shopping list name and ingredient id
-        # selected_list_name = request.POST.get('session_shopping_list')
-        # ingredient_id = request.POST.get('ingredient_id')
-        # store_id = request.POST.get('store_id')
-        # quantity = request.POST.get('quantity')
-
-        # if selected_list_name is None:
-            # messages.error(request, mark_safe(f"<br><br>Please select a shopping list or create one before adding items.<br><br>"))
-            # return redirect('item_search')
-
-        # # Check if a ShoppingListCollection with the same User and ListName exists
-        # existing_entry = ShoppingListCollection.objects.filter(
-            # UserID=user_id,
-            # ListID__ListName=selected_list_name
-        # ).first()
-
-        # # Use the existing ListID, otherwise use the next available ListID 
-        # if existing_entry:
-            # # Get or create a ShoppingList instance based on ListName and existing ListID
-            # shopping_list, created = ShoppingList.objects.get_or_create(
-                # ListID=existing_entry.ListID.ListID,
-                # ListName=selected_list_name,
-                # Ingredient_id=ingredient_id,
-                # StoreID_id=store_id,
-                # Quantity=quantity,
-                # #Budget=None,
-            # )
-        # else:
-            # # Find the maximum existing ListID for this user and increment
-            # max_list_id = ShoppingListCollection.objects.filter(UserID=user_id).aggregate(models.Max('ListID'))['ListID__max']
-            # list_id = max_list_id + 1 if max_list_id is not None else 1
-            # # Get or create a ShoppingList instance based on ListName and next available ListID
-            # shopping_list, created = ShoppingList.objects.get_or_create(
-                # ListID=list_id,
-                # ListName=selected_list_name,
-                # Ingredient_id=ingredient_id,
-                # StoreID_id=store_id,
-                # Quantity=quantity,
-                # #Budget=None,
-            # )
-
-        # # Check if the object is created (not retrieved from the database)
-        # if created:
-            # # Explicitly save only if the object is created
-            # messages.error(request, mark_safe(f"<br><br>Your item was added to the {selected_list_name} shopping list.<br><br>"))
-            # #shopping_list.save()
-        # else:
-            # # Handle the case where the object already exists
-            # messages.error(request, mark_safe(f"<br><br>This item already exists in your shopping list.<br><br>"))
-
-        # # Create or get the ShoppingListCollection entry
-        # shopping_list_collection, created = ShoppingListCollection.objects.get_or_create(
-            # UserID=user_id,
-            # ListID=shopping_list
-        # )
-
-        # return redirect('ingredient_search')
         
     if request.method == 'POST':
         # Get data from the form
@@ -437,16 +375,28 @@ def ingredient_search(request):
         grocery_store = GroceryStore.objects.get(StoreId=store_id)
         ingredient = Ingredient.objects.get(IngredientID=ingredient_id)
 
-        # Create an entry in the ShoppingList table
-        ShoppingList.objects.create(
+        # Check if the entry already exists
+        if not ShoppingList.objects.filter(
             ListID=shopping_list_id,
             Ingredient=ingredient,
             StoreID=grocery_store,
             Quantity=quantity
-        )
+            ).exists():
+            # If it doesn't exist, create a new entry
+            ShoppingList.objects.create(
+                ListID=shopping_list_id,
+                Ingredient=ingredient,
+                StoreID=grocery_store,
+                Quantity=quantity
+            )
+            return redirect('ingredient_search')
+        else:
+            messages.error(request, mark_safe(f"<br><br>This item already exists in your shopping list.<br><br>"))
+            return redirect('ingredient_search')
+
 
     # Redirect to a the ingredient search
-        return redirect('ingredient_search')  
+        #return redirect('ingredient_search')  
 
     # Retrieve the user id
     user = request.user.id
