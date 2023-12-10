@@ -4,7 +4,7 @@
 
 <body>
 	<center>
-    <h2>Your Tracked Ingredients</h2>
+    <h1>Your Tracked Ingredients</h1>
 	  {% if user_ingredients %}
 		<table border="1" class="custom-table">
 				<thead>
@@ -60,6 +60,14 @@
 					{% endfor %}
 				</tbody>
 			</table>
+				<h2>Currently selected date: {{ date_user.selecteddate }}</h2>
+				<form method="post" action="">
+					{% csrf_token %}
+					
+					<label for="id_selecteddate">Select a new Date:</label>
+					<input type="date" name="selecteddate" id="id_selecteddate" value="{{ date_user.selecteddate|default:'01/01/2022' }}">
+					<button type="submit">Save</button>
+				</form>
 		{% else %}
 		<p>You haven't tracked any ingredients yet.</p>
 		{% endif %}

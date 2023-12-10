@@ -31,7 +31,7 @@ def get_ingredient_prices(ing_id, store_id):
 def get_best_store(shopping_list):
     best_store=None
     best_price=None
-    stores = GroceryStore.objects.all()
+    stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
     for store in stores:
         store_price=0.00
         for ing in shopping_list:
@@ -76,11 +76,18 @@ def target_price_recipe(request):
     # Handle GET request or other cases
     return render(request, 'user_recipes.html')
     
-@login_required
+
 def user_ingredients(request):
+    date_user = AuthUser.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        selecteddate = request.POST.get('selecteddate')
+        if selecteddate:
+            date_user.selecteddate = selecteddate
+            date_user.save()
+            return redirect(request.path) 
     # Retrieve the currently logged-in user and their selected date
     user = request.user
-    selected_date = AuthUser.objects.get(id=user.id).selecteddate
+    selected_date = date_user.selecteddate
     
     # Retrieve the ingredients associated with the user
     ingredient_collections = IngredientCollection.objects.filter(UserID=user.id)
@@ -93,7 +100,7 @@ def user_ingredients(request):
         if best_price is not None and best_price < item.TargetPrice:
             below_price |= IngredientCollection.objects.filter(DjangoID=item.DjangoID)
     # Pass the data to the template
-    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections, 'below_price': below_price})
+    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections, 'below_price': below_price, 'date_user': date_user})
     
 def get_best_price(date, ingredient_id):
     best_price = None
@@ -296,12 +303,13 @@ def store_selection(request):
 
     user_id = request.user.id
     selected_stores = StoreCollection.objects.filter(UserID=user_id).values_list('StoreID', flat=True)
-    grocery_stores = GroceryStore.objects.all()
+    grocery_stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
 
     return render(request, 'store_selection.html', {'grocery_stores': grocery_stores, 'selected_stores': selected_stores})
 
 def shopping_lists(request, list_id=None, algorithm=None):
     user_id = AuthUser.objects.get(id=request.user.id)
+    total_cost=0.00
     #if the user adds a new shopping list
     #get name and add it to the users shopping list collection and add listid and name to shopping list model
     if request.method == "POST":
@@ -331,15 +339,21 @@ def shopping_lists(request, list_id=None, algorithm=None):
         for item in shopping_list_items:
             current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id)
         best_store=None
+        savings_percent=None
         if algorithm == "beststore":
             current_prices=PriceData.objects.none()
             best_store = get_best_store(shopping_list_items)
             for item in shopping_list_items:
                 current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id, StoreID=best_store.StoreId)
+                total_cost+=PriceData.objects.get(IngredientID=item.Ingredient_id, StoreID=best_store.StoreId).CurrentPrice*ShoppingList.objects.get(ListID=list_id, Ingredient_id=item.Ingredient_id).Quantity
+        elif algorithm == "savingspercent":
+            savings_percent=1
+        grocery_stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
+        
         return render(request, 'shopping_lists.html', {'UserListID': UserListID,
         'selected_list_id': list_id, 'session_list': shopping_list_names,
-        'selected_list': selected_list, 'shopping_list_items': shopping_list_items,
-        'current_prices': current_prices, 'best_store': best_store})
+        'selected_list': selected_list, 'shopping_list_items': shopping_list_items, 'total_cost': total_cost,
+        'current_prices': current_prices, 'best_store': best_store, 'savings_percent': savings_percent, 'grocery_stores': grocery_stores})
 
     return render(request, 'shopping_lists.html', {'UserListID': UserListID, 'selected_list_id': list_id, 'session_list': shopping_list_names,})
 

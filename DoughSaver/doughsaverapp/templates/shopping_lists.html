@@ -45,8 +45,29 @@
 				<span class="slider round"></span>
 				<p class="pswitch"> Savings Percent </p>
 			</label>
+			{% if savings_percent == 1 %}
+				<div style="max-width: 1000px; margin: 0 auto; padding: 20px; background-color: #fff;">
+					<form method="post" action="{% url 'shopping_lists' %}" style="display: inline-block;">
+						{% csrf_token %}
+						<div style="display: flex; align-items: center;">
+							<p style="margin-right: 10px;">Preferred Store: </p>
+							<select name="storeSelect" id="storeSelect" style="margin-right: 10px;">
+								{% for store in grocery_stores %}
+									<option value="{{ store.StoreId }}">{{store.StoreName }}</option>
+								{% endfor %}
+							</select>
+							<p style="margin-right: 5px;">Desired Savings: $</p>
+							<input type="text" style="width: 80px; padding: 5px; font-size: 14px;" placeholder="5.00" name="savings_amount">
+							<input type="submit" style="padding: 5px; font-size: 14px;" value="Submit">
+						</div>
+					</form>
+				</div>
+
+
+			{% endif %}
 		</div>
 		<h2>{{ selected_list.ListName }}</h2>
+		<h2>Total Cost: {{ total_cost }}</h2>
 		<table border="1" class="custom-table">
 		<thead>
 			<tr>
@@ -79,6 +100,28 @@
 				</td>
 			</tr>
 			{% endfor %}
+		{% elif savings_percent %}
+			{% for item in shopping_list_items %}
+			<tr class="custom-hover-tr">
+				<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a></td>
+				<td class="custom-table-td">{{ item.StoreID.StoreName }}</td>
+				{% for price in current_prices %}
+					{% if price.IngredientID_id == item.Ingredient_id and price.StoreID_id == item.StoreID_id %}
+						<td class="custom-table-td">{{ price.CurrentPrice }}</td>
+					{% endif %}
+				{% endfor %}
+				<td class="custom-table-td">{{ item.Quantity }}</td>
+				<td class="custom-table-td">
+					<form method="post" action="{% url 'remove_item_from_list' %}">
+						{% csrf_token %}
+						<input type="hidden" name="ingredient_id" value="{{ item.Ingredient.IngredientID }}">
+					    <input type="hidden" name="list_id" value="{{ selected_list.ListID }}">
+						<button type="submit">Remove Item</button>
+					</form>
+				</td>
+			</tr>
+			{% endfor %}
+			
 		{% else %}
 			{% for item in shopping_list_items %}
 			<tr class="custom-hover-tr">
