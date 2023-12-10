@@ -665,7 +665,7 @@ def settings_page(request):
         if selecteddate:
             date_user.selecteddate = selecteddate
             date_user.save()
-            return redirect('settings') 
+            return redirect('settings_page') 
 
 
 
