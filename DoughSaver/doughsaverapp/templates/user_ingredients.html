@@ -29,6 +29,11 @@
 										<form method="post" action="{% url 'target_price_ingredient' %}">
 											{% csrf_token %}
 											<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
+											{% for available_items in below_price %}
+												{% if available_items.IngredientID == item %}
+													<h4 style="color: red;">Available below target price!</h4>
+												{% endif %}
+											{% endfor %}
 											<input type="number" step="0.01" name="target_price" value="{{ collection.TargetPrice|default_if_none:'' }}">
 											<button type="submit">Update Price</button>
 										</form>

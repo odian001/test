@@ -78,15 +78,40 @@ def target_price_recipe(request):
     
 @login_required
 def user_ingredients(request):
-    # Retrieve the currently logged-in user
+    # Retrieve the currently logged-in user and their selected date
     user = request.user
-
+    selected_date = AuthUser.objects.get(id=user.id).selecteddate
+    
     # Retrieve the ingredients associated with the user
     ingredient_collections = IngredientCollection.objects.filter(UserID=user.id)
     user_ingredients = Ingredient.objects.filter(ingredientcollection__UserID=user.id)
-
+    
+    below_price = IngredientCollection.objects.none()
+    
+    for item in ingredient_collections:
+        best_price = get_best_price(selected_date, item.IngredientID_id)
+        if best_price is not None and best_price < item.TargetPrice:
+            below_price |= IngredientCollection.objects.filter(DjangoID=item.DjangoID)
     # Pass the data to the template
-    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections})
+    return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections, 'below_price': below_price})
+    
+def get_best_price(date, ingredient_id):
+    best_price = None
+    stores = GroceryStore.objects.all()
+
+    for store in stores:
+        price_history = PriceHistory.objects.filter(
+            IngredientID=ingredient_id,
+            StoreID=store.StoreId,
+            UpdateTimestamp__lt=date
+        ).order_by('-UpdateTimestamp')[:1]
+
+        if price_history:
+            if best_price is None:
+                best_price = price_history[0].HistoricalPrice
+            elif price_history[0].HistoricalPrice < best_price:
+                best_price = price_history[0].HistoricalPrice
+    return best_price
     
 @login_required
 def user_recipes(request):
@@ -109,8 +134,8 @@ def get_price_history(ingredient_id):
             SELECT StoreID, UpdateTimestamp, HistoricalPrice
             FROM PriceHistory
             WHERE IngredientID = %s
-              AND YEAR(UpdateTimestamp) = 2024
-            ORDER BY UpdateTimestamp
+              AND UpdateTimestamp BETWEEN '2022-11-01' AND '2024-01-01'
+            ORDER BY UpdateTimestamp;
             """,
             [ingredient_id]
         )
@@ -162,14 +187,14 @@ def plot_price_history(ingredient_name, price_history, plot_save_path):
 
         # Extend the last known price to cover the entire year
         last_known_price = df_resampled['prices'].iloc[-1]
-        end_of_year = pd.to_datetime(f'2024-12-31')
+        end_of_year = pd.to_datetime(f'2024-01-01')
         
         # Create a new DataFrame for the end of the year with the last known price
         df_end_of_year = pd.DataFrame({'prices': [last_known_price]}, index=[end_of_year])
         
         # Extend the first known price to cover the entire year
         first_known_price = df_resampled['prices'].iloc[0]
-        start_of_year = pd.to_datetime(f'2024-01-01')
+        start_of_year = pd.to_datetime(f'2022-11-01')
         
         # Create a new DataFrame for the start of the year with the first known price
         df_start_of_year = pd.DataFrame({'prices': [first_known_price]}, index=[start_of_year])
@@ -646,4 +671,3 @@ def settings_page(request):
 
     return render(request, 'settings.html', { 'date_user': date_user})
    
-
