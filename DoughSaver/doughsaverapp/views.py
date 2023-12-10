@@ -299,7 +299,7 @@ def store_selection(request):
         for store_id in selected_store_ids:
             StoreCollection.objects.create(UserID_id=user_id, StoreID_id=store_id)
     
-        return redirect('price_comparison_options')
+        return redirect('shopping_lists')
 
     user_id = request.user.id
     selected_stores = StoreCollection.objects.filter(UserID=user_id).values_list('StoreID', flat=True)
