@@ -31,6 +31,7 @@ urlpatterns = [
     path('target_price_ingredient/', target_price_ingredient, name='target_price_ingredient'),
     path('target_price_recipe/', target_price_recipe, name='target_price_recipe'),
     path('remove_item_from_list/', remove_item_from_list, name='remove_item_from_list'),
+    path('remove_shopping_list/', remove_shopping_list, name='remove_shopping_list'),
     path('settings/', settings_page, name='settings_page'),
 
 

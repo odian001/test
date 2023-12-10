@@ -20,7 +20,16 @@
                 <a href="{% url 'shopping_lists_with_id' list_id=list.ListID %}">{{ list.ListName }}</a>
             {% endfor %}
         </div>
-        </div>
+    </div>
+		{% if selected_list_id %}
+			<div class="remove-shopping-list">
+				<form method="post" action="{% url 'remove_shopping_list' %}">
+					{% csrf_token %}
+					<input type="hidden" name="list_id" value="{{ selected_list.ListID }}">
+					<input type="submit" style="padding: 5px; font-size: 14px;" value="Remove List">
+				</form>
+			</div>
+		{% endif %}
     <br><br>
 
     <!--Display chosen shopping list heading, if no list exists, display you have no lists-->

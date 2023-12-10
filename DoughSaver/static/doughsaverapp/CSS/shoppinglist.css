@@ -42,3 +42,13 @@
   /* Change the background color of the dropdown button when the dropdown content is shown */
   .sl_dropdown:hover .sl_dropbtn {background-color: #3e8e41;}
   /*.sl_dropdown:hover .sl_dropbtn {background-color: #b04925;}*/
+
+  .remove-shopping-list input[type="submit"] {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #232724;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-left: 20px;
+  }

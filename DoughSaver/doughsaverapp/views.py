@@ -310,23 +310,15 @@ def store_selection(request):
 def shopping_lists(request, list_id=None, algorithm=None):
     user_id = AuthUser.objects.get(id=request.user.id)
     total_cost=0.00
-    #if the user adds a new shopping list
-    #get name and add it to the users shopping list collection and add listid and name to shopping list model
+
     if request.method == "POST":
-        shopping_list_name = request.POST.get('shopping_list_name')
-        # # Get the existing list of shopping list names from the session
-        # shopping_list_names = request.session.get('created_list_name', [])
+        shopping_list_name = request.POST.get('shopping_list_name').strip()
 
-        # # Append the new shopping list name
-        # shopping_list_names.append(shopping_list_name)
-
-        # # Store the updated list back in the session
-        # request.session['created_list_name'] = shopping_list_names
-        
-        ShoppingListNames.objects.create(ListName=shopping_list_name,UserID=user_id)
-
-        # The shopping list was created, print message
-        messages.success(request, mark_safe(f"New shopping list created with Name: {shopping_list_name}<br>"))
+        if not shopping_list_name:
+            messages.error(request, mark_safe(f"Shopping list name cannot be empty or contain only whitespaces<br>"))
+        else:
+            ShoppingListNames.objects.create(ListName=shopping_list_name, UserID=user_id)
+            messages.success(request, mark_safe(f"New shopping list created with Name: {shopping_list_name}<br>"))
 
     #get user shopping lists
     UserListID = ShoppingListNames.objects.filter(UserID=user_id)
@@ -671,6 +663,19 @@ def remove_item_from_list(request):
         ShoppingList.objects.filter(ListID=list_id, Ingredient_id=ingredient_id).delete()
 
     return redirect(f'/shopping_lists/{list_id}/')
+
+def remove_shopping_list(request):
+    if request.method == 'POST':
+        # Get the form data
+        #ingredient_id = request.POST.get('ingredient_id')
+        list_id = request.POST.get('list_id')
+        #Items = list(ShoppingList.objects.filter(ListID=list_id))
+        #numItems = len(Items)
+
+        ShoppingList.objects.filter(ListID=list_id).delete()
+        ShoppingListNames.objects.filter(ListID=list_id).delete()
+
+    return redirect(f'/shopping_lists')
     
 def settings_page(request):
     date_user = AuthUser.objects.get(id=request.user.id)
