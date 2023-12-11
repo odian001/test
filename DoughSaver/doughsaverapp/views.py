@@ -47,7 +47,6 @@ def get_best_store(shopping_list):
 
 
 
-
 @login_required
 def target_price_ingredient(request):
     if request.method == 'POST':
@@ -114,8 +113,8 @@ def get_best_price(date, ingredient_id):
         price_history = PriceHistory.objects.filter(
             IngredientID=ingredient_id,
             StoreID=store.StoreId,
-            UpdateTimestamp__lt=date
-        ).order_by('-UpdateTimestamp')[:1]
+            UpdateTimestamp__gt=date
+        ).order_by('UpdateTimestamp')[:1]
 
         if price_history:
             if best_price is None:
