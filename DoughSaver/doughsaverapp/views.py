@@ -45,6 +45,22 @@ def get_best_store(shopping_list):
     
     return (best_store)
 
+def get_best_mix(shopping_list):
+    stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
+    # Dictionary to store the lowest ingredient price for each store
+    lowest_prices = {store.StoreId: float('inf') for store in stores}
+    for ing in shopping_list:
+        for store in stores:
+            ingredient_price = get_ingredient_prices(ing.Ingredient_id, store.StoreId)
+            # Update the lowest price for this store if the new price is lower
+            if ingredient_price < lowest_prices[store.StoreId]:
+                lowest_prices[store.StoreId] = ingredient_price
+    # Find stores with the lowest ingredient price
+    best_mix_stores = [store for store, price in lowest_prices.items() if price != float('inf')]
+
+    return (best_mix_stores)
+
+
 @login_required
 def target_price_ingredient(request):
     if request.method == 'POST':
@@ -341,7 +357,20 @@ def shopping_lists(request, list_id=None, algorithm=None):
         elif algorithm == "savingspercent":
             savings_percent=1
         grocery_stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
-        
+        #place holder for best mix to not break shopping list page because of alignment issues
+        #elif algorithm == "bestmix":
+            #stores_ingredient_prices = {}
+            #best_mix_stores = get_best_mix(shopping_list_items)
+
+            #for store_id in best_mix_stores:
+                #store_ingredient_prices = {}
+                
+                #for item in shopping_list_items:
+                    #ingredient_price = PriceData.objects.get(IngredientID=item.Ingredient_id, StoreID=store_id).CurrentPrice * ShoppingList.objects.get(ListID=list_id, Ingredient_id=item.Ingredient_id).Quantity
+                    #store_ingredient_prices[item.Ingredient_id] = ingredient_price
+
+                    #stores_ingredient_prices[store_id] = store_ingredient_prices
+        #'best_mix_stores': best_mix_stores, should be added in the return
         return render(request, 'shopping_lists.html', {'UserListID': UserListID,
         'selected_list_id': list_id, 'session_list': shopping_list_names,
         'selected_list': selected_list, 'shopping_list_items': shopping_list_items, 'total_cost': total_cost,

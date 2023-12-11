@@ -3,7 +3,7 @@ import mysql.connector
 db_config = {
     "host": "localhost",
     "user": "root",
-    "password": "1qaz!QAZ",
+    "password": "Quackblack75!",
     "database": "DoughSaverDB",
 }
 

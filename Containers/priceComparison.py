@@ -1,6 +1,7 @@
 import mariadb
 import sys
 
+
 def get_ingredient_prices(cur, id):
 	query = f"SELECT StoreID, CurrentPrice FROM PriceData WHERE IngredientID={id}"
 	cur.execute(query)
@@ -49,7 +50,7 @@ def get_best_mix(cur, ingredients):
 try:
     conn = mariadb.connect(
         user="root",
-        password="mypass",
+        password="Quackblack75!",
         host="localhost",
         port=3306,
         database="DoughSaverDB"
