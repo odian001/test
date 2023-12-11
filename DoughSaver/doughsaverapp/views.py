@@ -35,7 +35,7 @@ def get_best_store(shopping_list):
     for store in stores:
         store_price=0.00
         for ing in shopping_list:
-            store_price += get_ingredient_prices(ing.Ingredient_id, store.StoreId)
+            store_price += get_ingredient_prices(ing.Ingredient_id, store.StoreId)*ing.Quantity
         if best_store == None:
             best_store = store
             best_price = store_price
