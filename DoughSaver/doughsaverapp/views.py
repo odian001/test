@@ -99,10 +99,11 @@ def user_ingredients(request):
     below_price = IngredientCollection.objects.none()
     
     for item in ingredient_collections:
-        best_price = get_best_price(selected_date, item.IngredientID_id)
-        if best_price is not None and best_price < item.TargetPrice:
-            below_price |= IngredientCollection.objects.filter(DjangoID=item.DjangoID)
-    # Pass the data to the template
+        if item.TargetPrice:
+            best_price = get_best_price(selected_date, item.IngredientID_id)
+            if best_price is not None and best_price < item.TargetPrice:
+                below_price |= IngredientCollection.objects.filter(DjangoID=item.DjangoID)
+        # Pass the data to the template
     return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections, 'below_price': below_price, 'date_user': date_user})
     
 def get_best_price(date, ingredient_id):
