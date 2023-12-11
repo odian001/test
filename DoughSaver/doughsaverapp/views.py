@@ -537,31 +537,24 @@ def ingredient_detail(request, IngredientID):
     return render(request, 'ingredient_detail.html', context)
 
 def recipe_search(request):
-        user = request.user.id
-        shopping_lists = ShoppingListNames.objects.filter(UserID=user)
-
-        if request.method == 'POST':
-            recipe_id = request.POST.get('RecipeID')
-            shopping_list_id = request.POST.get('shoppingList')
-            recipes = Recipe.objects.filter(RecipeID=recipe_id)  # Get all matching recipes
-
-            user_stores = StoreCollection.objects.filter(UserID=user).values_list('StoreID', flat=True)
-            # Then iterate through the queryset
-            for recipe in recipes:
-                ingredient = recipe.Ingredient
-                quantity = recipe.Quantity
-                    # Assuming you have a way to retrieve/store associations between stores and ingredients
-                    # associated_store = Some logic to retrieve the store for this ingredient
+    user = request.user.id
+    shopping_lists = ShoppingListNames.objects.filter(UserID=user)
+    if request.method == 'POST':
+        recipe_id = request.POST.get('RecipeID')
+        shopping_list_id = request.POST.get('shoppingList')
+        recipes = Recipe.objects.filter(RecipeID=recipe_id)  # Get all matching recipes
+        user_stores = StoreCollection.objects.filter(UserID=user).values_list('StoreID', flat=True) # Get all user stores
+        duplicate = False
+        # Then iterate through 
+        for recipe in recipes:
+            ingredient = recipe.Ingredient
+            quantity = recipe.Quantity
+            store_with_ingredient = PriceData.objects.filter(StoreID__in=user_stores, IngredientID=ingredient).first()
             
             #Trying to Solve issue of duplicate entries of the same item
-            #  shopping_item = ShoppingList.objects.filter(ListID=shopping_list_id, Ingredient=ingredient).first()
-            # if shopping_item:
-                #        shopping_item.Quantity += recipe.Quantity
-                #           shopping_item.save()
-                #else:
-                
+            shopping_item = ShoppingList.objects.filter(ListID=shopping_list_id, Ingredient=ingredient, StoreID=store_with_ingredient.StoreID, Quantity=quantity).first()
+            if not shopping_item: 
                 # Filter StoreCollection for stores that have this ingredient and are user's stores
-                store_with_ingredient = PriceData.objects.filter(StoreID__in=user_stores, IngredientID=ingredient).first()
                 if store_with_ingredient:
                     # If a store with the ingredient is found, create a ShoppingList entry
                     ShoppingList.objects.create(
@@ -569,29 +562,34 @@ def recipe_search(request):
                         Ingredient=ingredient,
                         Quantity=quantity,
                         StoreID=store_with_ingredient.StoreID  
-                    )
+                        )
+                else:
+                    duplicate = True
 
-            return redirect('recipe_search') 
+        if duplicate:
+                return render(request, 'recipe_search.html', {'shopping_lists': shopping_lists, 'error_message': "Ingredients Already Added to the List!"})
+        else: 
+                return render(request,'recipe_search.html', {'shopping_lists': shopping_lists, 'error_message': "Recipe Added to the List!"}) 
         
-        search_query = request.GET.get('search_query', '')
-        recipes = []
+    search_query = request.GET.get('search_query', '')
+    recipes = []
 
-        if search_query:
-                recipes = Recipe.objects.filter(RecipeName__icontains=search_query).values(
-                        'RecipeID',
-                        'RecipeName'
-                )
-        distinct_recipes = {}
+    if search_query:
+        recipes = Recipe.objects.filter(RecipeName__icontains=search_query).values(
+                'RecipeID',
+                'RecipeName'
+            )
+    distinct_recipes = {}
 
-        for recipe in recipes:
-            recipe_id = recipe['RecipeID']
-            if recipe_id not in distinct_recipes:
-                distinct_recipes[recipe_id] = recipe
+    for recipe in recipes:
+        recipe_id = recipe['RecipeID']
+        if recipe_id not in distinct_recipes:
+            distinct_recipes[recipe_id] = recipe
 
-            # Use only the distinct recipes
-            recipes = list(distinct_recipes.values())
+         # Use only the distinct recipes
+        recipes = list(distinct_recipes.values())
 
-        return render(request, 'recipe_search.html', {'search_query': search_query, 'recipes': recipes,'shopping_lists': shopping_lists})
+    return render(request, 'recipe_search.html', {'search_query': search_query, 'recipes': recipes,'shopping_lists': shopping_lists})
 
     
 def shopping_list_detail(request, list_id):
