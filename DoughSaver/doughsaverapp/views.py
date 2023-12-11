@@ -108,7 +108,6 @@ def user_ingredients(request):
     
 def get_best_price(date, ingredient_id, user_id):
     best_price = None
-    #stores = GroceryStore.objects.all()
     stores = StoreCollection.objects.filter(UserID_id=user_id)
 
     for store in stores:
@@ -125,18 +124,57 @@ def get_best_price(date, ingredient_id, user_id):
                 best_price = price_history[0].HistoricalPrice
     return best_price
     
+def get_best_recipe_price(date, recipe_id, user_id):
+    best_price = None
+    stores = StoreCollection.objects.filter(UserID_id=user_id)
+    recipe_ingredients = Recipe.objects.filter(RecipeID=recipe_id)
+    for  ingredient in recipe_ingredients:
+        best_item_price=None
+        for store in stores:
+            price_history = PriceHistory.objects.filter(
+                IngredientID=ingredient.Ingredient_id,
+                StoreID=store.StoreID_id,
+                UpdateTimestamp__gt=date
+            ).order_by('UpdateTimestamp')[:1]
+
+            if price_history:
+                if best_item_price is None:
+                    best_item_price = price_history[0].HistoricalPrice
+                elif price_history[0].HistoricalPrice < best_item_price:
+                    best_item_price = price_history[0].HistoricalPrice
+        if best_price is None:
+            best_price = best_item_price
+        else:
+            best_price += best_item_price
+    return best_price
+    
 @login_required
 def user_recipes(request):
-    # Retrieve the currently logged-in user
+    date_user = AuthUser.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        selecteddate = request.POST.get('selecteddate')
+        if selecteddate:
+            date_user.selecteddate = selecteddate
+            date_user.save()
+            return redirect(request.path) 
+    # Retrieve the currently logged-in user and their selected date
     user = request.user
-
+    selected_date = date_user.selecteddate
+    
+    
     # Retrieve the ingredients associated with the user
     recipe_collections = RecipeCollection.objects.filter(UserID=user.id)   
     user_recipes = Recipe.objects.filter(recipecollection__UserID=user.id).values('RecipeID', 'RecipeName').distinct()
 
-
+    below_price = RecipeCollection.objects.none()
+    
+    for recipe in recipe_collections:
+        if recipe.TargetPrice:
+            best_price = get_best_recipe_price(selected_date, recipe.RecipeID_id, user.id)
+            if best_price is not None and best_price < recipe.TargetPrice:
+                below_price |= RecipeCollection.objects.filter(DjangoID=recipe.DjangoID)
     # Pass the data to the template
-    return render(request, 'user_recipes.html', {'user_recipes': user_recipes, 'recipe_collections': recipe_collections})
+    return render(request, 'user_recipes.html', {'user_recipes': user_recipes, 'recipe_collections': recipe_collections, 'below_price': below_price, 'date_user': date_user})
 
 
 def get_price_history(ingredient_id):
