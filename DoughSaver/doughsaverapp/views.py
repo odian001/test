@@ -20,6 +20,7 @@ import numpy as np
 import pandas as pd
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 
 
 def get_ingredient_prices(ing_id, store_id):
@@ -431,24 +432,27 @@ def ingredient_search(request):
         grocery_store = GroceryStore.objects.get(StoreId=store_id)
         ingredient = Ingredient.objects.get(IngredientID=ingredient_id)
 
+        try:
         # Check if the entry already exists
-        if not ShoppingList.objects.filter(
-            ListID=shopping_list_id,
-            Ingredient=ingredient,
-            StoreID=grocery_store,
-            Quantity=quantity
-            ).exists():
-            # If it doesn't exist, create a new entry
-            ShoppingList.objects.create(
+            if not ShoppingList.objects.filter(
                 ListID=shopping_list_id,
                 Ingredient=ingredient,
                 StoreID=grocery_store,
                 Quantity=quantity
-            )
-            return redirect('ingredient_search')
-        else:
-            messages.error(request, mark_safe(f"<br><br>This item already exists in your shopping list.<br><br>"))
-            return redirect('ingredient_search')
+                ).exists():
+                # If it doesn't exist, create a new entry
+                ShoppingList.objects.create(
+                    ListID=shopping_list_id,
+                    Ingredient=ingredient,
+                    StoreID=grocery_store,
+                    Quantity=quantity
+                )
+                return redirect('ingredient_search')
+            else:
+                messages.error(request, mark_safe(f"<br><br>This item already exists in your shopping list.<br><br>"))
+                return redirect('ingredient_search')
+        except IntegrityError:
+            return render(request, 'shopping_lists.html', {'error_message': "Please Create a List Before Adding Ingredients!"})
 
 
     # Redirect to a the ingredient search

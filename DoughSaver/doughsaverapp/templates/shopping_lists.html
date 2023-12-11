@@ -139,7 +139,13 @@
     <p>You have not selected a shopping list.</p>
     </center>
     {% endif %}
-
+	{% if error_message %}
+	<center>
+		<div style="font-size: 15px; margin-bottom: 2px;">
+			{{ error_message }}
+		</div>
+	</center>
+	{% endif %}
     <!--To the right allow a user to add a new shopping list, with placeholder - Add new Shopping List-->
     <form method="post" action="{% url 'shopping_lists' %}">
         {% csrf_token %}
