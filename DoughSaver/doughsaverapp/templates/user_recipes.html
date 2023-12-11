@@ -23,6 +23,11 @@
 										<form method="post" action="{% url 'target_price_recipe' %}">
 											{% csrf_token %}
 											<input type="hidden" name="recipe_id" value="{{ recipe.RecipeID }}">
+											{% for available_recipe in below_price %}
+												{% if available_recipe.RecipeID_id == recipe.RecipeID %}
+													<h4 style="color: red;">Available below target price!</h4>
+												{% endif %}
+											{% endfor %}
 											<input name="target_price" value="{{ collection.TargetPrice|default_if_none:'' }}">
 											<button type="submit">Update Price</button>
 										</form>
@@ -49,6 +54,14 @@
         {% endfor %}
       </tbody>
     </table>
+	<h2>Currently selected date: {{ date_user.selecteddate }}</h2>
+	<form method="post" action="">
+	{% csrf_token %}
+
+	<label for="id_selecteddate">Select a new Date:</label>
+	<input type="date" name="selecteddate" id="id_selecteddate" value="{{ date_user.selecteddate|default:'01/01/2022' }}">
+	<button type="submit">Save</button>
+	</form>
   {% else %}
     <p>You haven't tracked any recipes yet.</p>
 	<br><br><br><br>

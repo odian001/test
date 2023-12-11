@@ -23,25 +23,26 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 
 
+
 def get_ingredient_prices(ing_id, store_id):
     price_data = PriceData.objects.get(IngredientID_id=ing_id, StoreID=store_id)
     price = price_data.CurrentPrice
 
     return (price)
     
-def get_best_store(shopping_list):
+def get_best_store(shopping_list, user_id):
     best_store=None
     best_price=None
-    stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
+    stores = StoreCollection.objects.filter(UserID_id=user_id)
     for store in stores:
         store_price=0.00
         for ing in shopping_list:
-            store_price += get_ingredient_prices(ing.Ingredient_id, store.StoreId)*ing.Quantity
+            store_price += get_ingredient_prices(ing.Ingredient_id, store.StoreID_id)*ing.Quantity
         if best_store == None:
-            best_store = store
+            best_store = store.StoreID
             best_price = store_price
         elif store_price < best_price:
-            best_store = store
+            best_store = store.StoreID
             best_price = store_price
     
     return (best_store)
@@ -100,20 +101,20 @@ def user_ingredients(request):
     
     for item in ingredient_collections:
         if item.TargetPrice:
-            best_price = get_best_price(selected_date, item.IngredientID_id)
+            best_price = get_best_price(selected_date, item.IngredientID_id, user.id)
             if best_price is not None and best_price < item.TargetPrice:
                 below_price |= IngredientCollection.objects.filter(DjangoID=item.DjangoID)
         # Pass the data to the template
     return render(request, 'user_ingredients.html', {'user_ingredients': user_ingredients, 'ingredient_collections': ingredient_collections, 'below_price': below_price, 'date_user': date_user})
     
-def get_best_price(date, ingredient_id):
+def get_best_price(date, ingredient_id, user_id):
     best_price = None
-    stores = GroceryStore.objects.all()
+    stores = StoreCollection.objects.filter(UserID_id=user_id)
 
     for store in stores:
         price_history = PriceHistory.objects.filter(
             IngredientID=ingredient_id,
-            StoreID=store.StoreId,
+            StoreID=store.StoreID_id,
             UpdateTimestamp__gt=date
         ).order_by('UpdateTimestamp')[:1]
 
@@ -124,18 +125,57 @@ def get_best_price(date, ingredient_id):
                 best_price = price_history[0].HistoricalPrice
     return best_price
     
+def get_best_recipe_price(date, recipe_id, user_id):
+    best_price = None
+    stores = StoreCollection.objects.filter(UserID_id=user_id)
+    recipe_ingredients = Recipe.objects.filter(RecipeID=recipe_id)
+    for  ingredient in recipe_ingredients:
+        best_item_price=None
+        for store in stores:
+            price_history = PriceHistory.objects.filter(
+                IngredientID=ingredient.Ingredient_id,
+                StoreID=store.StoreID_id,
+                UpdateTimestamp__gt=date
+            ).order_by('UpdateTimestamp')[:1]
+
+            if price_history:
+                if best_item_price is None:
+                    best_item_price = price_history[0].HistoricalPrice
+                elif price_history[0].HistoricalPrice < best_item_price:
+                    best_item_price = price_history[0].HistoricalPrice
+        if best_price is None:
+            best_price = best_item_price
+        else:
+            best_price += best_item_price
+    return best_price
+    
 @login_required
 def user_recipes(request):
-    # Retrieve the currently logged-in user
+    date_user = AuthUser.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        selecteddate = request.POST.get('selecteddate')
+        if selecteddate:
+            date_user.selecteddate = selecteddate
+            date_user.save()
+            return redirect(request.path) 
+    # Retrieve the currently logged-in user and their selected date
     user = request.user
-
+    selected_date = date_user.selecteddate
+    
+    
     # Retrieve the ingredients associated with the user
     recipe_collections = RecipeCollection.objects.filter(UserID=user.id)   
     user_recipes = Recipe.objects.filter(recipecollection__UserID=user.id).values('RecipeID', 'RecipeName').distinct()
 
-
+    below_price = RecipeCollection.objects.none()
+    
+    for recipe in recipe_collections:
+        if recipe.TargetPrice:
+            best_price = get_best_recipe_price(selected_date, recipe.RecipeID_id, user.id)
+            if best_price is not None and best_price < recipe.TargetPrice:
+                below_price |= RecipeCollection.objects.filter(DjangoID=recipe.DjangoID)
     # Pass the data to the template
-    return render(request, 'user_recipes.html', {'user_recipes': user_recipes, 'recipe_collections': recipe_collections})
+    return render(request, 'user_recipes.html', {'user_recipes': user_recipes, 'recipe_collections': recipe_collections, 'below_price': below_price, 'date_user': date_user})
 
 
 def get_price_history(ingredient_id):
@@ -145,7 +185,7 @@ def get_price_history(ingredient_id):
             SELECT StoreID, UpdateTimestamp, HistoricalPrice
             FROM PriceHistory
             WHERE IngredientID = %s
-              AND UpdateTimestamp BETWEEN '2022-11-01' AND '2024-01-01'
+              AND UpdateTimestamp BETWEEN '2022-11-01' AND '2024-02-01'
             ORDER BY UpdateTimestamp;
             """,
             [ingredient_id]
@@ -153,23 +193,28 @@ def get_price_history(ingredient_id):
         rows = cursor.fetchall()
     return rows
 
-def plot_price_history(ingredient_name, price_history, plot_save_path):
+def plot_price_history(request, ingredient_name, price_history, plot_save_path):
     # Create a dictionary to store data for each store
     store_data = {}
+    user = request.user
+    stores = GroceryStore.objects.filter(storecollection__UserID=user.id)
+    stores |= GroceryStore.objects.filter(StoreId=8)
+    for store in stores:
+        for row in price_history:
+            store_id, timestamp, price = row
+            if store_id == store.StoreId:
+                # Convert timestamps to datetime objects
+                timestamp = pd.to_datetime(timestamp)
 
-    for row in price_history:
-        store_id, timestamp, price = row
+                # If the store_id is not in the dictionary, create a new entry
+                if store_id not in store_data:
+                    store_data[store_id] = {'timestamps': [], 'prices': [], 'label': f'Store {store_id}'}
 
-        # Convert timestamps to datetime objects
-        timestamp = pd.to_datetime(timestamp)
+                # Append data to the corresponding store entry
+                store_data[store_id]['timestamps'].append(timestamp)
+                store_data[store_id]['prices'].append(price)
+                
 
-        # If the store_id is not in the dictionary, create a new entry
-        if store_id not in store_data:
-            store_data[store_id] = {'timestamps': [], 'prices': [], 'label': f'Store {store_id}'}
-
-        # Append data to the corresponding store entry
-        store_data[store_id]['timestamps'].append(timestamp)
-        store_data[store_id]['prices'].append(price)
 
     # Retrieve store names from the database
     store_names = {store.StoreId: store.StoreName for store in GroceryStore.objects.all()}
@@ -198,7 +243,7 @@ def plot_price_history(ingredient_name, price_history, plot_save_path):
 
         # Extend the last known price to cover the entire year
         last_known_price = df_resampled['prices'].iloc[-1]
-        end_of_year = pd.to_datetime(f'2024-01-01')
+        end_of_year = pd.to_datetime(f'2024-02-01')
         
         # Create a new DataFrame for the end of the year with the last known price
         df_end_of_year = pd.DataFrame({'prices': [last_known_price]}, index=[end_of_year])
@@ -250,7 +295,7 @@ def ingredient_price_history(request, ingredient_id):
     plot_save_path = f"media/plots/{ingredient_id}_price_history.png"
 
     # Plot the price history and save the image
-    plot_price_history(ingredient_name, price_history, plot_save_path)
+    plot_price_history(request, ingredient_name, price_history, plot_save_path)
 
     # Pass the image file path to the template
     context = {
@@ -311,19 +356,19 @@ def store_selection(request):
 
     return render(request, 'store_selection.html', {'grocery_stores': grocery_stores, 'selected_stores': selected_stores})
     
-def get_best_mix(shopping_list):
-
-    stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
+def get_best_mix(shopping_list, user_id):
+    stores = StoreCollection.objects.filter(UserID_id=user_id)
+    #stores = GroceryStore.objects.filter(StoreId__range=(1, 5))
     # Dictionary to store the lowest ingredient price for each store
     best_mix_stores = {}
     lowest_prices = {ing.Ingredient_id: float('inf') for ing in shopping_list}
     for ing in shopping_list:
         for store in stores:
-            ingredient_price = get_ingredient_prices(ing.Ingredient_id, store.StoreId)
+            ingredient_price = get_ingredient_prices(ing.Ingredient_id, store.StoreID_id)
             # Update the lowest price for this store if the new price is lower
             if ingredient_price < lowest_prices[ing.Ingredient_id]:
                 lowest_prices[ing.Ingredient_id] = ingredient_price
-                best_mix_stores[ing.Ingredient_id] = store.StoreId
+                best_mix_stores[ing.Ingredient_id] = store.StoreID_id
     # Find stores with the lowest ingredient price
     #best_mix_stores = [store for store, price in lowest_prices.items() if price != float('inf')]
 
@@ -357,12 +402,12 @@ def shopping_lists(request, list_id=None, algorithm=None):
         savings_percent=None
         if algorithm == "beststore":
             current_prices=PriceData.objects.none()
-            best_store = get_best_store(shopping_list_items)
+            best_store = get_best_store(shopping_list_items, user_id)
             for item in shopping_list_items:
                 current_prices|=PriceData.objects.filter(IngredientID=item.Ingredient_id, StoreID=best_store.StoreId)
                 total_cost+=PriceData.objects.get(IngredientID=item.Ingredient_id, StoreID=best_store.StoreId).CurrentPrice*ShoppingList.objects.get(ListID=list_id, Ingredient_id=item.Ingredient_id).Quantity
         elif algorithm == "bestmix":
-            best_mix_stores = get_best_mix(shopping_list_items)
+            best_mix_stores = get_best_mix(shopping_list_items, user_id)
             for ingredient_id, store_id in best_mix_stores.items():
                 total_cost+=PriceData.objects.get(IngredientID=ingredient_id, StoreID=store_id).CurrentPrice*ShoppingList.objects.get(ListID=list_id, Ingredient_id=ingredient_id).Quantity
 
@@ -507,12 +552,16 @@ def ingredient_search(request):
 
     return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': unique_items,'shopping_lists': shopping_lists})
     
-def get_current_prices(ingredient_id):
-    current_prices = PriceData.objects.filter(IngredientID=ingredient_id)
+def get_current_prices(ingredient_id, user):
+    stores = GroceryStore.objects.filter(storecollection__UserID=user.id)
+    stores |= GroceryStore.objects.filter(StoreId=8)
+    current_prices = PriceData.objects.none()
+    for store in stores:
+        current_prices |= PriceData.objects.filter(IngredientID=ingredient_id, StoreID=store.StoreId)
     return current_prices
     
 def ingredient_detail(request, IngredientID):
-
+    user=request.user
     # Get the ingredient object or return a 404 error if not found
     ingredient = get_object_or_404(Ingredient, pk=IngredientID)
 
@@ -520,13 +569,13 @@ def ingredient_detail(request, IngredientID):
     price_history = get_price_history(IngredientID)
     
     # Get the current prices for the current ingredient
-    current_prices = get_current_prices(IngredientID)
+    current_prices = get_current_prices(IngredientID, user)
     
     # Define the path to save the Matplotlib plot image
     plot_save_path = f"media/plots/{IngredientID}_price_history.png"
 
     # Plot the price history and save the image
-    plot_price_history(ingredient.IngredientName, price_history, plot_save_path)
+    plot_price_history(request, ingredient.IngredientName, price_history, plot_save_path)
 
     # Pass the image file path to the template
     context = {
