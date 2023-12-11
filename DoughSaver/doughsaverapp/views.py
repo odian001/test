@@ -192,23 +192,28 @@ def get_price_history(ingredient_id):
         rows = cursor.fetchall()
     return rows
 
-def plot_price_history(ingredient_name, price_history, plot_save_path):
+def plot_price_history(request, ingredient_name, price_history, plot_save_path):
     # Create a dictionary to store data for each store
     store_data = {}
+    user = request.user
+    stores = GroceryStore.objects.filter(storecollection__UserID=user.id)
+    stores |= GroceryStore.objects.filter(StoreId=8)
+    for store in stores:
+        for row in price_history:
+            store_id, timestamp, price = row
+            if store_id == store.StoreId:
+                # Convert timestamps to datetime objects
+                timestamp = pd.to_datetime(timestamp)
 
-    for row in price_history:
-        store_id, timestamp, price = row
+                # If the store_id is not in the dictionary, create a new entry
+                if store_id not in store_data:
+                    store_data[store_id] = {'timestamps': [], 'prices': [], 'label': f'Store {store_id}'}
 
-        # Convert timestamps to datetime objects
-        timestamp = pd.to_datetime(timestamp)
+                # Append data to the corresponding store entry
+                store_data[store_id]['timestamps'].append(timestamp)
+                store_data[store_id]['prices'].append(price)
+                
 
-        # If the store_id is not in the dictionary, create a new entry
-        if store_id not in store_data:
-            store_data[store_id] = {'timestamps': [], 'prices': [], 'label': f'Store {store_id}'}
-
-        # Append data to the corresponding store entry
-        store_data[store_id]['timestamps'].append(timestamp)
-        store_data[store_id]['prices'].append(price)
 
     # Retrieve store names from the database
     store_names = {store.StoreId: store.StoreName for store in GroceryStore.objects.all()}
@@ -289,7 +294,7 @@ def ingredient_price_history(request, ingredient_id):
     plot_save_path = f"media/plots/{ingredient_id}_price_history.png"
 
     # Plot the price history and save the image
-    plot_price_history(ingredient_name, price_history, plot_save_path)
+    plot_price_history(request, ingredient_name, price_history, plot_save_path)
 
     # Pass the image file path to the template
     context = {
@@ -543,12 +548,16 @@ def ingredient_search(request):
 
     return render(request, 'ingredient_search.html', {'ingredient_search_query': search_query, 'items': unique_items,'shopping_lists': shopping_lists})
     
-def get_current_prices(ingredient_id):
-    current_prices = PriceData.objects.filter(IngredientID=ingredient_id)
+def get_current_prices(ingredient_id, user):
+    stores = GroceryStore.objects.filter(storecollection__UserID=user.id)
+    stores |= GroceryStore.objects.filter(StoreId=8)
+    current_prices = PriceData.objects.none()
+    for store in stores:
+        current_prices |= PriceData.objects.filter(IngredientID=ingredient_id, StoreID=store.StoreId)
     return current_prices
     
 def ingredient_detail(request, IngredientID):
-
+    user=request.user
     # Get the ingredient object or return a 404 error if not found
     ingredient = get_object_or_404(Ingredient, pk=IngredientID)
 
@@ -556,13 +565,13 @@ def ingredient_detail(request, IngredientID):
     price_history = get_price_history(IngredientID)
     
     # Get the current prices for the current ingredient
-    current_prices = get_current_prices(IngredientID)
+    current_prices = get_current_prices(IngredientID, user)
     
     # Define the path to save the Matplotlib plot image
     plot_save_path = f"media/plots/{IngredientID}_price_history.png"
 
     # Plot the price history and save the image
-    plot_price_history(ingredient.IngredientName, price_history, plot_save_path)
+    plot_price_history(request, ingredient.IngredientName, price_history, plot_save_path)
 
     # Pass the image file path to the template
     context = {
