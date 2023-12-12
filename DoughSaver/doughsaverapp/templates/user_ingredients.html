@@ -11,7 +11,6 @@
 					<tr>
 						<th class="custom-table-th">Ingredient Name</th>
 						<th class="custom-table-th">Target Price</th>
-						<th class="custom-table-th">Add to List</th>
 						<th class="custom-table-th">Track Item?</th>
 					</tr>
 				</thead>
@@ -42,13 +41,6 @@
 								
 							{% endfor %}
 
-							<td class="custom-table-td">
-								<form method="post" action={ url 'add_to_shopping_list'}>
-									{% csrf_token %} <!-- Needs Implementation for Shopping List-->
-									<input type="hidden" name="ingredient_id" value="{{ item.IngredientID }}">
-									<button type="submit">Add to Shopping List</button>
-								</form>
-							</td>
 							<td class="custom-table-td">
 								<form method="post" action="{% url 'untrack_item' %}">
 									{% csrf_token %}
