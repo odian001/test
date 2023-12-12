@@ -536,6 +536,8 @@ def ingredient_search(request):
     items = items.values(
         'IngredientID',
         'IngredientID__IngredientName',
+        'IngredientID__Quantity',
+        'IngredientID__Unit',
         'CurrentPrice',
         'StoreID',
         'StoreID__StoreName'

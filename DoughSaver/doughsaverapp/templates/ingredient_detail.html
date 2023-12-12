@@ -7,7 +7,7 @@
     <title>{{ ingredient.IngredientName }}</title>
 </head>
 <body>
-    <center><h1>{{ ingredient.IngredientName }}</h1>
+    <center><h1>{{ ingredient.IngredientName }} {{ ingredient.Quantity|floatformat:0 }} {{ ingredient.Unit }}</h1>
     <!-- Display current prices in a table -->
     <h2>Current Prices</h2>
     <table>

@@ -65,7 +65,7 @@
 		{% if best_store %}
 			{% for item in shopping_list_items %}
 			<tr class="custom-hover-tr">
-				<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a></td>
+				<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }} {{ item.Ingredient.Quantity|floatformat:0 }} {{ item.Ingredient.Unit }}</a></td>
 				<td class="custom-table-td">{{ best_store.StoreName }}</td>
 				{% for price in current_prices %}
 					{% if price.IngredientID_id == item.Ingredient_id %}
@@ -86,7 +86,7 @@
 		{% elif best_mix_stores %}
 			{% for item in shopping_list_items %}
 					<tr class="custom-hover-tr">
-						<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a></td>
+						<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}  {{ item.Ingredient.Quantity|floatformat:0 }} {{ item.Ingredient.Unit }}</a></td>
 					{% for ingredient_id, store_id in best_mix_stores.items %}	
 						{% for store in grocery_stores %}
 							{% if store.StoreId == store_id and item.Ingredient_id == ingredient_id%}
@@ -113,7 +113,7 @@
 		{% else %}
 			{% for item in shopping_list_items %}
 			<tr class="custom-hover-tr">
-				<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}</a></td>
+				<td class="custom-table-td"><a href="{% url 'ingredient_detail' IngredientID=item.Ingredient.IngredientID %}">{{ item.Ingredient.IngredientName }}  {{ item.Ingredient.Quantity|floatformat:0 }} {{ item.Ingredient.Unit }}</a></td>
 				<td class="custom-table-td"></td>
 						<td class="custom-table-td"></td>
 				<td class="custom-table-td">{{ item.Quantity }}</td>

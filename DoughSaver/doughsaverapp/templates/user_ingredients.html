@@ -21,7 +21,7 @@
 						<tr class="custom-hover-tr">
 
 							<td class="custom-table-td">
-								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientName }}</a>
+								<a href="{% url 'ingredient_detail' IngredientID=item.IngredientID %}">{{ item.IngredientName }} {{ item.Quantity|floatformat:0 }} {{ item.Unit }}</a>
 							</td>
 							{% for collection in ingredient_collections %}
 								{% if collection.IngredientID.IngredientID == item.IngredientID %}
